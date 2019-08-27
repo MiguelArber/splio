@@ -1,0 +1,7 @@
+{
+  "name": "itguys/splio",
+  "type": "drupal-module",
+  "require": {
+      "drupal/key": "*"
+  }
+}
