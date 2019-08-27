@@ -1,0 +1,9 @@
+type: module
+name: 'Splio'
+description: 'Provides a series of services to synchronize Drupal entities with Splio.'
+package: Splio
+configure: system.config.splio.api_key_config
+dependencies:
+  - key
+version: '8.x-1.0.0'
+core: '8.x'

@@ -1,0 +1,2 @@
+system.config.splio.entity_config:
+  deriver: 'Drupal\splio\Plugin\Derivative\SplioDynamicTasks'

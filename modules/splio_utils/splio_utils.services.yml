@@ -1,0 +1,12 @@
+services:
+  logger.channel.splio:
+    parent: logger.channel_base
+    arguments: ['splio']
+
+  splio_utils.splio_blacklist_manager:
+    class: Drupal\splio_utils\Services\SplioBlacklistManager
+    arguments: ['@key.repository', '@config.factory',  '@logger.channel.splio']
+
+  splio_utils.splio_trigger_manager:
+    class: Drupal\splio_utils\Services\SplioTriggerManager
+    arguments: ['@key.repository', '@config.factory',  '@logger.channel.splio']

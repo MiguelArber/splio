@@ -1,0 +1,8 @@
+services:
+  logger.channel.splio:
+    parent: logger.channel_base
+    arguments: ['splio']
+
+  splio.splio_connector:
+    class: Drupal\splio\Services\SplioConnector
+    arguments: ['@key.repository', '@config.factory', '@entity_type.manager','@queue' , '@event_dispatcher',  '@logger.channel.splio']

@@ -1,0 +1,66 @@
+<?php
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ *
+ * @param $route_name
+ * @param RouteMatchInterface $route_match
+ *
+ * @return string
+ */
+
+function splio_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the splio module.
+    case 'help.page.splio':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Provides a series of services to synchronize Drupal entities with Splio.') . '</p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Receives an entity that has just been inserted into the DB. If belongs to
+ * an entity type that has been configured as a splio entity it will be added
+ * to the insert entities que.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ */
+function splio_entity_insert(EntityInterface $entity) {
+  \Drupal::service('splio.splio_connector')
+    ->addEntityToQueue($entity, 'create');
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Receives an entity that has just been updated from the DB. If belongs to
+ * an entity type that has been configured as a splio entity it will be added
+ * to the update entities que.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ */
+function splio_entity_update(EntityInterface $entity) {
+  \Drupal::service('splio.splio_connector')
+    ->addEntityToQueue($entity, 'update');
+}
+
+/**
+ * Implements hook_entity_delete().
+ *
+ * Receives an entity that has just been deleted from the DB. If belongs to
+ * an entity type that has been configured as a splio entity it will be added
+ * to the delete entities que.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ */
+function splio_entity_delete(EntityInterface $entity) {
+  \Drupal::service('splio.splio_connector')
+    ->addEntityToQueue($entity, 'delete');
+}

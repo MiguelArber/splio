@@ -1,0 +1,25 @@
+splio.splio.*:
+  type: config_entity
+  label: 'Splio field config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    splio_entity:
+      type: string
+      label: 'splio_entity'
+    splio_field:
+      type: string
+      label: 'splio_field'
+    drupal_field:
+      type: string
+      label: 'drupal_field'
+    type_field:
+      type: string
+      label: 'type_field'
+    is_key_field:
+      type: boolean
+      label: 'is_key_field'
+    is_default_field:
+      type: boolean
+      label: 'is_default_field'
