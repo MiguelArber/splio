@@ -863,10 +863,22 @@ class SplioConnector {
         $value = $this->getEntityReferenceValue($field, $entity);
       }
       else {
-        // In other cases, just unpack the value.
-        $value = $entity->get($field)->getValue() ?
-          end($entity->get($field)->getValue()[0])
-          : $value;
+        // In case the received field contains an array of elements, send them
+        // as a comma-separated string.
+        $fieldValues = $entity->get($field)->getValue();
+
+        if (is_array($fieldValues) && count($fieldValues) > 1) {
+          foreach ($fieldValues as $fieldKey => $fieldDef) {
+            array_push($value, end($fieldDef));
+          }
+          $value = implode(", ", $value);
+        }
+        else {
+          // In other cases, just unpack the value.
+          $value = $entity->get($field)->getValue() ?
+            end($entity->get($field)->getValue()[0])
+            : $value;
+        }
       }
     }
     else {
