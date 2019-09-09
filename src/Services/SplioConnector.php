@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Queue\QueueFactory;
 use Drupal\key\KeyRepository;
+use Drupal\splio\Entity\SplioField;
 use Drupal\splio\Event\SplioQueueEvent;
 use Drupal\splio\Event\SplioRequestEvent;
 use Drupal\splio\Event\SplioResponseEvent;
@@ -44,6 +45,8 @@ class SplioConnector {
   ];
 
   protected $client;
+
+  protected const DATE_FORMAT = 'Y-m-d H:i:s';
 
   /**
    * SplioConnector constructor.
@@ -794,6 +797,8 @@ class SplioConnector {
       $splioField = $field->getSplioField();
       $fieldValue = $this->getFieldValue($drupalField, $entity);
 
+      $fieldValue = $this->formatField($field, $fieldValue);
+
       if ($field->isDefaultField()) {
         // Arrays are not allowed as field values.
         $entityStructure[$splioField] = is_array($fieldValue) ?
@@ -891,6 +896,27 @@ class SplioConnector {
     }
 
     return $value;
+  }
+
+  /**
+   * Formats the received value to its field type.
+   *
+   * @param \Drupal\splio\Entity\SplioField $field
+   *   The Splio received field.
+   * @param mixed $fieldValue
+   *   The current value for the received SPlio field.
+   *
+   * @return mixed
+   *   Returns the value formatted to the configured type.
+   */
+  private function formatField(SplioField $field, $fieldValue) {
+    if ($field->getTypeField() == 'date') {
+      if (is_numeric($fieldValue)) {
+        $fieldValue = date(static::DATE_FORMAT, $fieldValue);
+      }
+    }
+
+    return $fieldValue;
   }
 
   /**
