@@ -303,6 +303,9 @@ class SplioConnector {
           $currentEntityType = static::SPLIO_URI[$entityType];
           $entityStructure = $this->generateEntityStructure($entity);
 
+          // Add the type to the $entityStructure so it is more accessible.
+          $entityStructure['splioEntityType'] = $entityType;
+
           // Manage the event to be dispatched.
           $requestEvent = new SplioRequestEvent($entityStructure);
           $this->eventDispatcher
@@ -395,6 +398,9 @@ class SplioConnector {
           // Generate the base entity structure.
           $currentEntity = static::SPLIO_URI[$entityType];
           $entityStructure = $this->generateEntityStructure($entity);
+
+          // Add the type to the $entityStructure so it is more accessible.
+          $entityStructure['splioEntityType'] = $entityType;
 
           // Manage the event to be dispatched.
           $requestEvent = new SplioRequestEvent($entityStructure);
@@ -507,6 +513,9 @@ class SplioConnector {
           $currentEntity = static::SPLIO_URI[$entityType];
           $entityStructure = $this->generateEntityStructure($entity);
 
+          // Add the type to the $entityStructure so it is more accessible.
+          $entityStructure['splioEntityType'] = $entityType;
+
           // Manage the event to be dispatched.
           $requestEvent = new SplioRequestEvent($entityStructure);
           $this->eventDispatcher->dispatch(SplioRequestEvent::SPLIO_UPDATE, $requestEvent);
@@ -538,6 +547,9 @@ class SplioConnector {
 
           // Generate the URI based on the variables that have been just set.
           $uri = $this->baseUri . $currentEntity . $keyFieldValue;
+
+          dump($entityStructure);
+          die();
 
           // Returns a promise once the function has finished.
           yield function () use ($uri, $entityStructure) {
@@ -604,6 +616,9 @@ class SplioConnector {
             // Generate the base entity structure.
             $currentEntity = static::SPLIO_URI[$entityType];
             $entityStructure = $this->generateEntityStructure($entity);
+
+            // Add the type to the $entityStructure so it is more accessible.
+            $entityStructure['splioEntityType'] = $entityType;
 
             // Manage the event to be dispatched.
             $requestEvent = new SplioRequestEvent($entityStructure);
