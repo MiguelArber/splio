@@ -548,9 +548,6 @@ class SplioConnector {
           // Generate the URI based on the variables that have been just set.
           $uri = $this->baseUri . $currentEntity . $keyFieldValue;
 
-          dump($entityStructure);
-          die();
-
           // Returns a promise once the function has finished.
           yield function () use ($uri, $entityStructure) {
             return $this->client->putAsync($uri,
