@@ -748,11 +748,6 @@ class SplioConnector {
 
       $queue = $this->queueFactory->get('cron_splio_sync');
 
-      if ($action != 'create' && $action != 'update' && $action != 'delete') {
-        $this->logger->error("Invalid action type received. Only 'create', 'update' and 'delete' methods are allowed.");
-        return;
-      }
-
       // Create an item.
       $item = [
         'id' => end($entity
@@ -772,6 +767,17 @@ class SplioConnector {
       // update the item before inserting it into the queue.
       !$queueEvent->hasChangedItem() ?:
         $item = $queueEvent->getSplioQueueItem();
+
+      // Perform a last check to ensure the action set is correct.
+      if ($item['action'] != 'create' && $action != 'update' && $action != 'delete') {
+        $this->logger->error("The %type[%id] entity will not be queued. Action type received: %action. Only 'create', 'update' and 'delete' actions are queued.",
+          [
+            '%action' => $item['action'],
+            '%type' => $item['splioEntityType'],
+            '%id' => $item['id'],
+          ]);
+        return;
+      }
 
       // Add the item to the queue.
       $queue->createItem($item);
