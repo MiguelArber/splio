@@ -1022,13 +1022,12 @@ class SplioConnector {
       ]);
 
     // Get the local field configured as order_id_order_lines.
-    $entityOrderId = $entityFields['order_id_order_lines']->getDrupalField();
-    $entityOrderId = $this->getFieldValue($entityOrderId, $entity);
+    $orderIdField = $entityFields['order_id_order_lines']->getDrupalField();
 
-    // If the value is an entity reference, store the key that contains it.
-    $entityOrderId = is_array($entityOrderId) ?
-      array_keys($entityOrderId)[0]
-      : $entityOrderId;
+    // If the value turns to be an entity reference then store it's key.
+    $orderIdField = (strncmp($orderIdField, "{{", 2) == 0) ?
+      array_keys($this->getFieldValue($orderIdField, $entity))[0]
+      : $orderIdField;
 
     // Load the splio entity fields for orders (receipts).
     $orderFields = $this->entityTypeManager
@@ -1048,10 +1047,15 @@ class SplioConnector {
     // If the orderId field is an entity reference...
     $orderId = $this->getFieldValue($drupalFieldOrderKey, $entity);
 
+    // If the value is an entity reference, store the key that contains it.
+    $orderId = is_array($orderId) ?
+      end($orderId)
+      : $orderId;
+
     // Load all the order_lines that belong to that orderId.
     $orderLinesEntities = $this->entityTypeManager
       ->getStorage($entityType)
-      ->loadByProperties([$entityOrderId => $orderId]);
+      ->loadByProperties([$orderIdField => $orderId]);
 
     foreach ($orderLinesEntities as $entityKey => $entity) {
       foreach ($entityFields as $field) {
