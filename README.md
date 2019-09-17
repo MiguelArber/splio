@@ -10,9 +10,9 @@ This is the project page for the Splio project developed for Drupal 8.
 4. Create a .key file to connect to Splio and configure a new key under the Key module.
 5. Execute `drush updb` and `drush cim` to import the configuration to your project.
 
-## Testing instructions
+## Typical workflow
 
-After installation and configuration, Splio's tipical workflow is meant to be as it follows:
+After installation and configuration, Splio's typical workflow is meant to be as it follows:
 
 1. A splio entity is created/updated/removed.
 2. Splio's hook will catch the entity, make some processes and will queue it to process it later.
@@ -21,6 +21,8 @@ After installation and configuration, Splio's tipical workflow is meant to be as
 4. Depending in the action (CRUD) that triggered the hook, the Splio module will perform several processes.
 5. Before sending the request to Splio an event is triggered in order to make possible custom changes.
 6. Data is sent to Splio via Splio API ver. 1.x.
+
+## Testing instructions
 
 I order to test this workflow the follow the steps below:
 
