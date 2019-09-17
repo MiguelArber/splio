@@ -21,3 +21,19 @@ After installation and configuration, Splio's tipical workflow is meant to be as
 4. Depending in the action (CRUD) that triggered the hook, the Splio module will perform several processes.
 5. Before sending the request to Splio an event is triggered in order to make possible custom changes.
 6. Data is sent to Splio via Splio API ver. 1.x.
+
+I order to test this workflow the follow the steps below:
+
+1. Create a new entity in Valentina:
+```
+    Action: POST
+    URI: http://{{auth}}{{url}}/bb_data_layer/bodeboca_users?_format=json
+    Body:
+    [  
+        {  
+            "uid":172750,
+            "domain":"bodeboca.com"
+        }
+    ]
+```
+2. Use Drush to process the queue by running `drush queue_run cron_splio_sync`.
