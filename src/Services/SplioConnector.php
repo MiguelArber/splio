@@ -782,6 +782,12 @@ class SplioConnector {
       // Add the item to the queue.
       $queue->createItem($item);
     }
+    else {
+      $this->logger->error("The received entity %id does not belong to Splio. Check your configuration and try again.",
+        [
+          '%id' => $entity->id(),
+        ]);
+    }
   }
 
   /**
