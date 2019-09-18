@@ -617,7 +617,7 @@ class SplioFieldForm extends EntityForm {
 
       $listKey = empty($this->remoteContactsLists) ? $listKey : $listDef['name'];
 
-      if (empty($listsFields)) {
+      if (!isset($listsFields[$listKey])) {
         $listsFields[$listKey] = $this->entityTypeManager
           ->getStorage('splio_field')->create();
         $listsFields[$listKey]->setIsNew(TRUE);
