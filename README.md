@@ -38,4 +38,4 @@ I order to test this workflow the follow the steps below:
         }
     ]
 ```
-2. Use Drush to process the queue by running `drush queue_run cron_splio_sync`.
+2. Use Drush to process the queue by running `drush queue-run cron_splio_sync`.
