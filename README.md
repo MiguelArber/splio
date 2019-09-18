@@ -8,7 +8,7 @@ This is the project page for the Splio project developed for Drupal 8.
 2. In D6, pull the latest version of Bodeboca from the branch [29-migrate-splio-to-valentina](https://gitlab.bodeboca.com/bodeboca/bodeboca/tree/29-migrate-splio-to-valentina).
 3. In D8, pull the latest version Valentina from the branch [29-splio](https://gitlab.bodeboca.com/bodeboca/valentina/tree/29-splio).
 4. Create a .key file to connect to Splio and configure a new key under the Key module.
-5. Execute `drush updb` and `drush cim` to import the configuration to your project.
+5. Execute `drush entity-updates` and `drush cim` to import the configuration to your project.
 
 ## Typical workflow
 
