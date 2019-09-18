@@ -2,10 +2,10 @@ splio.configure_api_key:
   title: 'Splio settings'
   description: 'Configure the connection settings to sync with Splio.'
   route_name: system.config.splio.api_key_config
-  parent: system.admin_config
+  parent: system.admin_config_services
 
 splio.configure_entity:
   title: 'Splio entity configuration'
   description: 'Configure the Splio entities.'
   route_name: system.config.splio.entity_config
-  parent: system.admin_config
+  parent: system.admin_config_services
