@@ -548,6 +548,9 @@ class SplioConnector {
           // Generate the URI based on the variables that have been just set.
           $uri = $this->baseUri . $currentEntity . $keyFieldValue;
 
+          dump($entityStructure);
+          die();
+
           // Returns a promise once the function has finished.
           yield function () use ($uri, $entityStructure) {
             return $this->client->putAsync($uri,
@@ -776,17 +779,11 @@ class SplioConnector {
             '%type' => $item['splioEntityType'],
             '%id' => $item['id'],
           ]);
-        return;
       }
-
-      // Add the item to the queue.
-      $queue->createItem($item);
-    }
-    else {
-      $this->logger->error("The received entity %id does not belong to Splio. Check your configuration and try again.",
-        [
-          '%id' => $entity->id(),
-        ]);
+      else {
+        // Add the item to the queue.
+        $queue->createItem($item);
+      }
     }
   }
 
@@ -911,12 +908,14 @@ class SplioConnector {
       }
     }
     else {
-      $this->logger
-        ->error("Error trying to obtain a valid value for the %field field of the %entity entity.",
-          [
-            '%field' => $field,
-            '%entity' => $entity->getEntityTypeId(),
-          ]);
+      if (!empty($field)) {
+        $this->logger
+          ->error("Error trying to obtain a valid value for the %field field of the %entity entity.",
+            [
+              '%field' => $field,
+              '%entity' => $entity->getEntityTypeId(),
+            ]);
+      }
     }
 
     return $value;
@@ -974,8 +973,9 @@ class SplioConnector {
 
       // Drupal field storing the subscription of the user for the current list.
       $contactsListsDrupalField = $list->getDrupalField();
-      $contactFieldValue = empty($contactsListsDrupalField) ?:
-        $this->getFieldValue($contactsListsDrupalField, $entity);
+      $contactFieldValue = empty($contactsListsDrupalField) ?
+        NULL
+        : $this->getFieldValue($contactsListsDrupalField, $entity);
 
       // If the value is not empty and it is TRUE, 1 or it contains the name of
       // the current list, the user will be subscribed to that list. In any
