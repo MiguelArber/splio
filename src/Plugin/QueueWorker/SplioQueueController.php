@@ -9,6 +9,7 @@ use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\splio\Services\SplioConnector;
 use Drupal\Core\Queue\SuspendQueueException;
 use Drupal\Core\Queue\RequeueException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -17,6 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @property \Drupal\Core\Entity\EntityManager entityManager
  * @property \Drupal\splio\Services\SplioConnector splioConnector
  * @property \Drupal\Core\Config\ConfigFactory config
+ * @property \Psr\Log\LoggerInterface logger
  * @QueueWorker(
  *   id = "cron_splio_sync",
  *   title = @Translation("Cron Splio sync process"),
@@ -34,21 +36,28 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
    *   The splioConnector service.
    * @param \Drupal\Core\Config\ConfigFactory $config
    *   The configFactory service.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   The loggerInterface service.
    */
-  public function __construct(EntityManager $entityManager, SplioConnector $splioConnector, ConfigFactory $config) {
+  public function __construct(EntityManager $entityManager, SplioConnector $splioConnector, ConfigFactory $config, LoggerInterface $logger) {
     $this->entityManager = $entityManager;
     $this->splioConnector = $splioConnector;
     $this->config = $config;
+    $this->logger = $logger;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    /** @var \Psr\Log\LoggerInterface $logger */
+    $logger = $container->get('logger.channel.splio');
+
     return new static(
       $container->get('entity.manager'),
       $container->get('splio.splio_connector'),
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $logger
     );
   }
 
@@ -121,7 +130,11 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
         throw new SuspendQueueException('Splio server is not responding. Aborting sync...');
       }
       else {
-        throw new \Exception("A problem occurred, the " . $data['id'] . " item cannot not be processed.");
+        $this->logger
+          ->error("A problem occurred, the %data item cannot not be processed.",
+            [
+              '%data' => $data['id'],
+            ]);
       }
     }
 
