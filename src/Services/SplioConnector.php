@@ -338,7 +338,10 @@ class SplioConnector {
               },
               function (RequestException $exception) {
                 $this->logger
-                  ->error("Unable to post item to Splio API: $exception");
+                  ->error("Unable to fetch/send data from Splio API. %message.",
+                    [
+                      '%message' => $exception->getMessage(),
+                    ]);
                 throw $exception;
               }
             );
@@ -443,7 +446,10 @@ class SplioConnector {
               },
               function (RequestException $exception) {
                 $this->logger
-                  ->error("Unable to fetch/send data from Splio API: $exception");
+                  ->error("Unable to fetch/send data from Splio API. %message.",
+                    [
+                      '%message' => $exception->getMessage(),
+                    ]);
                 throw $exception;
               }
             );
@@ -548,9 +554,6 @@ class SplioConnector {
           // Generate the URI based on the variables that have been just set.
           $uri = $this->baseUri . $currentEntity . $keyFieldValue;
 
-          dump($entityStructure);
-          die();
-
           // Returns a promise once the function has finished.
           yield function () use ($uri, $entityStructure) {
             return $this->client->putAsync($uri,
@@ -569,7 +572,10 @@ class SplioConnector {
               },
               function (RequestException $exception) {
                 $this->logger
-                  ->error("Unable to fetch/send data from Splio API: $exception");
+                  ->error("Unable to fetch/send data from Splio API. %message.",
+                    [
+                      '%message' => $exception->getMessage(),
+                    ]);
                 throw $exception;
               }
             );
@@ -651,7 +657,10 @@ class SplioConnector {
                 },
                 function (RequestException $exception) {
                   $this->logger
-                    ->error("Unable to fetch/send data from Splio API: $exception");
+                    ->error("Unable to fetch/send data from Splio API. %message.",
+                      [
+                        '%message' => $exception->getMessage(),
+                      ]);
                   throw $exception;
                 }
               );
@@ -905,16 +914,6 @@ class SplioConnector {
             end($entity->get($field)->getValue()[0])
             : $value;
         }
-      }
-    }
-    else {
-      if (!empty($field)) {
-        $this->logger
-          ->error("Error trying to obtain a valid value for the %field field of the %entity entity.",
-            [
-              '%field' => $field,
-              '%entity' => $entity->getEntityTypeId(),
-            ]);
       }
     }
 
