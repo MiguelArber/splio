@@ -95,19 +95,29 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
     $entitySplioKeyField = $this->config->get('splio.entity.config')
       ->get('splio_entities')[$data['splioEntityType']]['splio_entity_key_field'];
 
-    // Load the drupal field mapped to the previously loaded key field.
-    $entityDrupalField = $this->entityManager
-      ->getStorage('splio_field')
-      ->loadByProperties([
-        'splio_entity' => $data['splioEntityType'],
-      ])[$entitySplioKeyField]->getDrupalField();
+    try {
+      // Load the drupal field mapped to the previously loaded key field.
+      $entityDrupalField = $this->entityManager
+        ->getStorage('splio_field')
+        ->loadByProperties([
+          'splio_entity' => $data['splioEntityType'],
+        ])[$entitySplioKeyField]->getDrupalField();
 
-    // Load the entity based on the obtained key field.
-    $entity = $this->entityManager
-      ->getStorage($entityDrupalType)
-      ->loadByProperties([
-        $entityDrupalField => $data['id'],
-      ]);
+      // Load the entity based on the obtained key field.
+      $entity = $this->entityManager
+        ->getStorage($entityDrupalType)
+        ->loadByProperties([
+          $entityDrupalField => $data['id'],
+        ]);
+    }
+    catch (\Exception $exception) {
+      $this->logger
+        ->error("A problem occurred when trying to process the item: %message",
+          [
+            '%message' => $exception->getMessage(),
+          ]);
+      return;
+    }
 
     // If there is any, add the original entity to the current entity.
     empty($data['original']) ?: end($entity)->original = $data['original'];
@@ -130,11 +140,7 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
         throw new SuspendQueueException('Splio server is not responding. Aborting sync...');
       }
       else {
-        $this->logger
-          ->error("A problem occurred, the %data item cannot not be processed.",
-            [
-              '%data' => $data['id'],
-            ]);
+        throw new \Exception("A problem occurred, the " . $data['id'] . " item cannot not be processed at this moment.");
       }
     }
 
