@@ -739,7 +739,35 @@ class SplioConnector {
   public function addEntityToQueue(EntityInterface $entity, $action) {
     $splioEntityType = $this->isSplioEntity($entity);
 
+    $validActions = [
+      'create' => 'create',
+      'update' => 'update',
+      'delete' => 'delete',
+      'dequeue' => 'dequeue',
+    ];
+
+    $item = [];
+
     if ($splioEntityType) {
+
+      if ($splioEntityType == 'order_lines') {
+
+        // If an order_line is received, then the whole receipt (order)
+        // which it belongs to will be updated.
+        $orderEntity = $this->getOrderForOrderLine($entity);
+        if (!empty($orderEntity)) {
+          $entity = $orderEntity;
+        }
+        else {
+          $this->logger
+            ->error('Could not retrieve an order for the received %entity order_lines entity.',
+              [
+                '%entity' => $entity->getEntityTypeId(),
+              ]);
+        }
+        $splioEntityType = 'receipts';
+        $item += ['originalSplioEntityType' => 'order_lines'];
+      }
 
       // Load the key field for the received entity.
       $entitySplioKeyField = $this->config->get('splio.entity.config')
@@ -759,7 +787,7 @@ class SplioConnector {
       $queue = $this->queueFactory->get('cron_splio_sync');
 
       // Create an item.
-      $item = [
+      $item += [
         'id' => end($entity
           ->get($entityKeyField)
           ->getValue()[0]),
@@ -775,21 +803,22 @@ class SplioConnector {
 
       // In case someone captured the event and made changes in the item,
       // update the item before inserting it into the queue.
-      !$queueEvent->hasChangedItem() ?:
-        $item = $queueEvent->getSplioQueueItem();
+      $item = $queueEvent->getSplioQueueItem();
 
       // Perform a last check to ensure the action set is correct.
-      if ($item['action'] != 'create' && $action != 'update' && $action != 'delete') {
-        $this->logger->error("The %type[%id] entity will not be queued. Action type received: %action. Only 'create', 'update' and 'delete' actions are queued.",
-          [
-            '%action' => $item['action'],
-            '%type' => $item['splioEntityType'],
-            '%id' => $item['id'],
-          ]);
-      }
-      else {
-        // Add the item to the queue.
-        $queue->createItem($item);
+      if ($item['action'] != 'dequeue') {
+        if (!in_array($item['action'], $validActions)) {
+          $this->logger->error("The %type[%id] entity will not be queued. Action type received: %action. Only 'create', 'update' and 'delete' actions are queued.",
+            [
+              '%action' => $item['action'],
+              '%type' => $item['splioEntityType'],
+              '%id' => $item['id'],
+            ]);
+        }
+        else {
+          // Add the item to the queue.
+          $queue->createItem($item);
+        }
       }
     }
   }
@@ -1121,8 +1150,9 @@ class SplioConnector {
       return NULL;
     }
 
-    $keys = array_keys($orderIdValue);
-    $orderIdValue = $orderIdValue[$keys[0]];
+    $orderIdValue = is_array($orderIdValue) ?
+      $orderIdValue[array_keys($orderIdValue)[0]]
+      : $orderIdValue;
 
     // Finally, load the order entity by passing the obtained order id
     // as the configured key field.
@@ -1157,12 +1187,12 @@ class SplioConnector {
           ->loadByProperties([
             $orderKeyDrupalField => $orderIdValue,
           ])[$orderIdValue];
+        return $entity;
       }
     }
     else {
       return NULL;
     }
-    return $entity;
   }
 
   /**
