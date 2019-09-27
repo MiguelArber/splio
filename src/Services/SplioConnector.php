@@ -436,7 +436,8 @@ class SplioConnector {
                   // Decode the received response and add the proper keyField.
                   $response = json_decode($response->getBody(), TRUE);
                   $response['keyField'] = $keyField;
-                } catch (\Error $exception) {
+                }
+                catch (\Error $exception) {
                   $this->logger
                     ->error("Unable to decode Splio API response: $exception");
                 }
@@ -461,8 +462,9 @@ class SplioConnector {
 
     // Iterate, unpack and add to an array the Splio response.
     foreach ($requestedSplioEntities as $requestedEntity) {
-      $receivedEntityKey = $requestedEntity[array_pop($requestedEntity)];
-      $receivedSplioEntities[$receivedEntityKey] = $requestedEntity;
+      (is_array($requestedEntity)) ?
+        $receivedSplioEntities[$requestedEntity[array_pop($requestedEntity)]] = $requestedEntity
+        : array_push($receivedSplioEntities, $requestedEntity);
     }
 
     return $receivedSplioEntities;
