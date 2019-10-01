@@ -109,6 +109,10 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
         ->loadByProperties([
           $entityDrupalField => $data['id'],
         ]);
+
+      if (empty($entity) && !(empty($data['original']))) {
+        $entity = $data['original'];
+      }
     }
     catch (\Exception $exception) {
       $this->logger
