@@ -110,8 +110,11 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
           $entityDrupalField => $data['id'],
         ]);
 
+      // In delete actions, the $entity might not exist, in these cases the
+      // provided data['original'] entity will be used as the current entity.
       if (empty($entity) && !(empty($data['original']))) {
-        $entity = $data['original'];
+        $entity = [$data['original']];
+        $data['original'] = NULL;
       }
     }
     catch (\Exception $exception) {
