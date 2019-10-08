@@ -1095,22 +1095,28 @@ class SplioConnector {
       ->loadByProperties([$orderIdField => $orderId]);
 
     foreach ($orderLinesEntities as $entityKey => $entity) {
+      $orderLineFields = [];
       foreach ($entityFields as $field) {
 
         $drupalField = $field->getDrupalField();
         $splioField = $field->getSplioField();
         $fieldValue = $this->getFieldValue($drupalField, $entity);
+        if (!empty($fieldValue)) {
+          $fieldValue = is_array($fieldValue) ? end($fieldValue) : $fieldValue;
+        }
+
 
         if ($field->isDefaultField()) {
-          $entitiesStructure[$entityKey][$splioField] = $fieldValue;
+          $orderLineFields[$entityKey][$splioField] = $fieldValue;
         }
         else {
-          $entitiesStructure[$entityKey]['fields'][] = [
+          $orderLineFields[$entityKey]['fields'][] = [
             'name' => $splioField,
             'value' => $fieldValue,
           ];
         }
       }
+      $entitiesStructure[] = array_pop($orderLineFields);
     }
 
     return $entitiesStructure;
