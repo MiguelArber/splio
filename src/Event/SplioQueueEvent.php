@@ -39,7 +39,9 @@ class SplioQueueEvent extends Event {
    *   Receives a Splio entity formatted inside an array.
    */
   public function alterSplioQueueItem(array $item) {
-    $this->changed = ($this->item === $item) ? FALSE : TRUE;
+    if ($this->changed == FALSE) {
+      $this->changed = ($this->item === $item) ? FALSE : TRUE;
+    }
     $this->item = $item;
   }
 
