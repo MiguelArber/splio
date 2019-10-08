@@ -44,7 +44,7 @@ class SplioRequestEvent extends Event {
    *   Receives a Splio entity formatted inside an array.
    */
   public function alterSplioEntity(array $entity) {
-    if ($this->changed == FALSE) {
+    if ($this->changed === FALSE) {
       $this->changed = ($this->entity === $entity) ? FALSE : TRUE;
     }
     $this->entity = $entity;
