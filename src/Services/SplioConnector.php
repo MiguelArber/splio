@@ -312,8 +312,7 @@ class SplioConnector {
 
           // In case someone captured the event and made changes in the
           // entityStructure, update the entityStructure.
-          !$requestEvent->hasChangedEntity() ?:
-            $entityStructure = $requestEvent->getSplioEntity();
+          $entityStructure = $requestEvent->getSplioEntity();
 
           // Generate the URI based on the variables that have been just set.
           $uri = $this->baseUri . $currentEntityType;
@@ -411,8 +410,7 @@ class SplioConnector {
 
           // In case someone captured the event and made changes in the
           // entityStructure, update the entityStructure.
-          !$requestEvent->hasChangedEntity() ?:
-            $entityStructure = $requestEvent->getSplioEntity();
+          $entityStructure = $requestEvent->getSplioEntity();
 
           // Manage the key that will be used to make the request.
           $keyField = (key($entityStructure['keyField'])) ?? NULL;
@@ -633,8 +631,7 @@ class SplioConnector {
 
             // In case someone captured the event and made changes in the
             // entityStructure, update the entityStructure.
-            !$requestEvent->hasChangedEntity() ?:
-              $entityStructure = $requestEvent->getSplioEntity();
+            $entityStructure = $requestEvent->getSplioEntity();
 
             // Manage the key that will be used to make the request.
             $keyField = (key($entityStructure['keyField'])) ?? NULL;
