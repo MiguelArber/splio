@@ -325,10 +325,10 @@ class SplioConnector {
                 'body' => json_encode($entityStructure),
               ]
             )->then(
-              function (ResponseInterface $response) {
+              function (ResponseInterface $response, $entityStructure) {
 
                 // Manage the event to be dispatched.
-                $responseEvent = new SplioResponseEvent($response);
+                $responseEvent = new SplioResponseEvent($response, $entityStructure);
                 $this->eventDispatcher
                   ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
 
@@ -559,10 +559,10 @@ class SplioConnector {
                 'body' => json_encode($entityStructure),
               ]
             )->then(
-              function (ResponseInterface $response) {
+              function (ResponseInterface $response, $entityStructure) {
 
                 // Manage the event to be dispatched.
-                $responseEvent = new SplioResponseEvent($response);
+                $responseEvent = new SplioResponseEvent($response, $entityStructure);
                 $this->eventDispatcher
                   ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
 
@@ -643,10 +643,10 @@ class SplioConnector {
             // Returns a promise once the function has finished.
             yield function () use ($uri) {
               return $this->client->deleteAsync($uri)->then(
-                function (ResponseInterface $response) {
+                function (ResponseInterface $response, $entityStructure) {
 
                   // Manage the event to be dispatched.
-                  $responseEvent = new SplioResponseEvent($response);
+                  $responseEvent = new SplioResponseEvent($response, $entityStructure);
                   $this->eventDispatcher
                     ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
 

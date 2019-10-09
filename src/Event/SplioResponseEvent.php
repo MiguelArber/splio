@@ -2,6 +2,7 @@
 
 namespace Drupal\splio\Event;
 
+use org\bovigo\vfs\content\FileContent;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -14,6 +15,8 @@ use Symfony\Component\EventDispatcher\Event;
  *
  * @property Psr\Http\Message\ResponseInterface response
  *   Splio's received response.
+ * @property array entityStructure
+ *   Splio's sent entity structure.
  */
 class SplioResponseEvent extends Event {
 
@@ -22,21 +25,34 @@ class SplioResponseEvent extends Event {
   /**
    * SplioResponseEvent constructor.
    *
-   * @param Psr\Http\Message\ResponseInterface $response
+   * @param \Psr\Http\Message\ResponseInterface $response
    *   Receives the response sent by Splio.
+   * @param array $entityStructure
+   *   Receives the sent Splio entity structure.
    */
-  public function __construct(ResponseInterface $response) {
+  public function __construct(ResponseInterface $response, array $entityStructure = NULL) {
     $this->response = $response;
+    $this->entityStructure = $entityStructure;
   }
 
   /**
    * Returns the response received from the Splio API.
    *
    * @return Psr\Http\Message\ResponseInterface
-   *   Receives a Splio entity formatted inside an array.
+   *   Returns the result of the HTTP request made to Splio's API.
    */
   public function getSplioResponse() {
     return $this->response;
+  }
+
+  /**
+   * Returns the Splio entity structure sent to Splio's API.
+   *
+   * @return array
+   *   Returns a Splio entity formatted inside an array.
+   */
+  public function getSplioEntityStructure() {
+    return $this->entityStructure;
   }
 
 }
