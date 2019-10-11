@@ -141,16 +141,12 @@ class ApiKeyConfigForm extends ConfigFormBase {
 
     ($this->splioConnector->hasConnection($config)) ?
       $msg = [$this->messenger()->addStatus($this->t('Successfully connected to Splio!')), "status"]
-      : $msg =
-      [
-        $this
-          ->messenger()
-          ->addError(
+      : $msg = [
+        $this->messenger()->addError(
             $this
               ->t('Could not connect to Splio. Check your Splio configuration and try again. Visit the <a href="@help">help page</a> for further information.',
               ['@help' => '/admin/help/splio'])
-        ),
-        "error",
+        ), "error",
       ];
 
     $this->messenger()->addMessage('API Key: ' . $config['key'], end($msg));

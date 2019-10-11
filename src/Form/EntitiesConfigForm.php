@@ -25,8 +25,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class EntitiesConfigForm extends ConfigFormBase {
 
+  /**
+   * The Splio settings.
+   *
+   * @var string
+   */
   const SETTINGS = 'splio.entity.config';
 
+  /**
+   * The Splio entity types.
+   *
+   * @var array
+   */
   const SPLIO_ENTITIES = [
     'contacts',
     'products',
@@ -35,11 +45,26 @@ class EntitiesConfigForm extends ConfigFormBase {
     'stores',
   ];
 
-  public $splioEntityLabel = [];
+  /**
+   * The Splio entity label.
+   *
+   * @var array
+   */
+  protected $splioEntityLabel;
 
-  public $currentSplioEntity = "";
+  /**
+   * The current Splio entity.
+   *
+   * @var string
+   */
+  protected $currentSplioEntity;
 
-  public $contentEntities;
+  /**
+   * Stores the entity type labels.
+   *
+   * @var array
+   */
+  protected $contentEntities;
 
   /**
    * EntityConfigForm constructor.
@@ -151,7 +176,7 @@ class EntitiesConfigForm extends ConfigFormBase {
       ->entityTypeRepository
       ->getEntityTypeLabels(TRUE)['Content'];
 
-    // D8_BUG??: For some reason, the select in the last row of the table isn't
+    // For some reason, the select in the last row of the table isn't
     // processed correctly, which causes the '- None -' option to not display.
     // This small workaround fixes it.
     array_push($splioEntities, 'fix');
