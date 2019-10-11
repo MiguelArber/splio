@@ -5,34 +5,71 @@ namespace Drupal\splio\Entity;
 use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Path\CurrentPathStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class SplioEntity.
  *
+ * @property \Drupal\Core\Entity\EntityTypeManagerInterface entityTypeManager
  * @package Drupal\splio\Entity
  */
 class SplioEntity {
 
+  /**
+   * Used to provides dependency injection methods for serialization.
+   */
   use DependencySerializationTrait;
 
+  /**
+   * Stores the Splio type.
+   *
+   * @var string
+   */
   private $splioType;
 
+  /**
+   * Stores the Drupal entity type.
+   *
+   * @var string
+   */
   private $localType;
 
+  /**
+   * Stores the Drupal bundle type.
+   *
+   * @var string
+   */
   private $localBundleType;
 
+  /**
+   * Stores the name of the Splio entity.
+   *
+   * @var string
+   */
   private $label;
 
+  /**
+   * Stores the configured Splio entities.
+   *
+   * @var array
+   */
   private $splioEntities;
 
-  private $currentPathStack;
-
-  private $entityTypeManager;
-
+  /**
+   * Stores the entity fields that belong to a specific Splio entity.
+   *
+   * @var array
+   */
   private $splioEntityFields = array();
 
+  /**
+   * Defines the entity default fields for each Splio entity type.
+   *
+   * These fields are mandatory by Splio so they must be always present in the
+   * form (and requests to Splio's API) in order to be configured by the user.
+   *
+   * @var array
+   */
   const ENTITY_DEFAULT_FIELDS = [
     'contacts' => [
       'email',
@@ -122,7 +159,7 @@ class SplioEntity {
   }
 
   /**
-   * Sets up the proper splio Splio entity.
+   * Sets up the proper Splio entity.
    *
    * @param array $splioEntity
    *   Array containing the Local config for Splio entities.
@@ -134,7 +171,7 @@ class SplioEntity {
   }
 
   /**
-   * Sets up the proper splio entity fields.
+   * Sets up the proper Splio entity fields.
    *
    * Loads the entity fields from DB. In case there are no stored fields for the
    * entity it will create the default fields and will store them.
