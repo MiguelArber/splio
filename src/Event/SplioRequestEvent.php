@@ -19,7 +19,6 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class SplioRequestEvent extends Event {
 
-  const SPLIO_EVENT = 'splio_event.request';
   const SPLIO_CREATE = 'splio_event.create';
   const SPLIO_READ = 'splio_event.read';
   const SPLIO_UPDATE = 'splio_event.update';
