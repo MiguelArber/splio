@@ -26,17 +26,47 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  */
 class SplioFieldForm extends EntityForm {
 
-  public $splioEntity;
+  /**
+   * The Splio entity configured by the form.
+   *
+   * @var string
+   */
+  private $splioEntity;
 
-  public $currentEntity;
+  /**
+   * SThe Splio entity being managed currently by the form.
+   *
+   * @var string
+   */
+  private $currentEntity;
 
-  public $entityFields = array();
+  /**
+   * The available fields for the current Splio entity.
+   *
+   * @var array
+   */
+  private $entityFields = array();
 
-  public $fieldOptions = array();
+  /**
+   * Stores the entity being managed currently by the form.
+   *
+   * @var array
+   */
+  private $fieldOptions = array();
 
-  public $contactsLists = array();
+  /**
+   * Splio lists -loaded locally- to which the contacts can be subscribed.
+   *
+   * @var array
+   */
+  private $contactsLists = array();
 
-  public $remoteContactsLists = array();
+  /**
+   * Splio lists -remotely fetched- to which the contacts can be subscribed.
+   *
+   * @var array
+   */
+  private $remoteContactsLists = array();
 
   /**
    * Constructs an SplioEntityConfigForm object.
@@ -84,123 +114,139 @@ class SplioFieldForm extends EntityForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
-
     $this->setupForm($form, $form_state);
 
-    $form['entity_fields'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->currentEntity . " " . $this->t("fields configuration"),
-    ];
-
-    $form['entity_fields']['entity_fields_table'] = [
-      '#type' => 'table',
-      '#caption' => $this->t(
-        "Configure the mapping between the Splio's %entity fields and your site's fields.",
-        ['%entity' => $this->currentEntity]),
-      '#attributes' => [
-        'id' => 'entity_fields',
-      ],
-    ];
-
-    if ($this->currentEntity == 'order_lines') {
-      $form['entity_fields']['entity_fields_table']['#header'] = [
-        $splio_field = $this->t('Splio field'),
-        $drupal_field = $this->t('Local field'),
-        $type_field = $this->t('Type'),
-        $actions = $this->t('Actions'),
+    // The form container.
+    $form['entity_fields'] =
+      [
+        '#type' => 'fieldset',
+        '#title' => $this->currentEntity . " " . $this->t("fields configuration"),
       ];
-    }
-    else {
-      $form['entity_fields']['entity_fields_table']['#header'] = [
-        $splio_field = $this->t('Splio field'),
-        $drupal_field = $this->t('Local field'),
-        $type_field = $this->t('Type'),
-        $is_key_field = $this->t('Is key'),
-        $actions = $this->t('Actions'),
-      ];
-    }
 
+    // The general fields table.
+    $form['entity_fields']['entity_fields_table'] =
+      [
+        '#type' => 'table',
+        '#caption' => $this->t(
+          "Configure the mapping between the Splio's %entity fields and your site's fields.",
+          ['%entity' => $this->currentEntity]),
+        '#attributes' => [
+          'id' => 'entity_fields',
+        ],
+      ];
+
+    // Add the header's names.
+    $form['entity_fields']['entity_fields_table']['#header'][] = $this->t('Splio field');
+    $form['entity_fields']['entity_fields_table']['#header'][] = $this->t('Local field');
+    $form['entity_fields']['entity_fields_table']['#header'][] = $this->t('Type');
+
+    // Order lines have no key field. They are included inside the receipts.
+    ($this->currentEntity == 'order_lines') ?: $form['entity_fields']['entity_fields_table']['#header'][] = $this->t('Is key');
+    $form['entity_fields']['entity_fields_table']['#header'][] = $this->t('Actions');
+
+    // Order lines have no key field, so no radios are presented in this case.
     if ($this->currentEntity != 'order_lines') {
-      $form['entity_fields']['radios'] = [
-        '#type' => 'tableselect',
-        '#multiple' => FALSE,
-        '#header' => [],
-      ];
+      $form['entity_fields']['radios'] =
+        [
+          '#type' => 'tableselect',
+          '#multiple' => FALSE,
+          '#header' => [],
+        ];
     }
 
+    // Create a row for each Splio field.
     foreach ($this->entityFields as $splioField => $splioFieldDef) {
 
+      // Default fields are presented slightly different from custom ones.
       if ($splioFieldDef->isDefaultField()) {
-        $form['entity_fields']['entity_fields_table'][$splioField]['splio_field'] = [
-          '#type' => 'label',
-          '#title' => $splioFieldDef->getSplioField(),
-          '#description' => '',
-        ];
+
+        // Splio field label.
+        $form['entity_fields']['entity_fields_table'][$splioField]['splio_field'] =
+          [
+            '#type' => 'label',
+            '#title' => $splioFieldDef->getSplioField(),
+            '#description' => '',
+          ];
       }
       else {
-        $form['entity_fields']['entity_fields_table'][$splioField]['splio_field'] = [
-          '#type' => 'textfield',
-          '#maxlength' => 64,
-          '#size' => 30,
-          '#default_value' => empty($splioFieldDef->getSplioField()) ?
-          $form_state->getUserInput()['entity_fields']['entity_fields_table'][$splioField]['splio_field']
-          : $splioFieldDef->getSplioField(),
-        ];
+
+        // Splio field textfield.
+        $form['entity_fields']['entity_fields_table'][$splioField]['splio_field'] =
+          [
+            '#type' => 'textfield',
+            '#maxlength' => 64,
+            '#size' => 30,
+            '#default_value' => empty($splioFieldDef->getSplioField()) ?
+            $form_state->getUserInput()['entity_fields']['entity_fields_table'][$splioField]['splio_field']
+            : $splioFieldDef->getSplioField(),
+          ];
       }
 
-      $form['entity_fields']['entity_fields_table'][$splioField]['drupal_field'] = [
-        '#type' => 'select',
-        '#options' => $this->fieldOptions,
-        '#empty_value' => '',
-        '#default_value' => empty($splioFieldDef->getDrupalField()) ?:
-        $splioFieldDef->getDrupalField(),
-      ];
+      // Drupal field select.
+      $form['entity_fields']['entity_fields_table'][$splioField]['drupal_field'] =
+        [
+          '#type' => 'select',
+          '#options' => $this->fieldOptions,
+          '#empty_value' => '',
+          '#default_value' => empty($splioFieldDef->getDrupalField()) ?:
+          $splioFieldDef->getDrupalField(),
+        ];
 
-      $form['entity_fields']['entity_fields_table'][$splioField]['type_field'] = [
-        '#type' => 'select',
-        '#options' => $splioFieldDef->getFieldTypes(),
-        '#default_value' => empty($splioFieldDef->getTypeField()) ?:
-        $splioFieldDef->getTypeField(),
-      ];
+      // Type field select.
+      $form['entity_fields']['entity_fields_table'][$splioField]['type_field'] =
+        [
+          '#type' => 'select',
+          '#options' => $splioFieldDef->getFieldTypes(),
+          '#default_value' => empty($splioFieldDef->getTypeField()) ?:
+          $splioFieldDef->getTypeField(),
+        ];
 
+      // Order lines have no key field, so it's column should not be presented.
       if ($this->currentEntity != 'order_lines') {
-        $form['entity_fields']['entity_fields_table'][$splioField]['is_key_field'] = [
-          '#type' => 'radio',
-          '#default_value' => empty($splioFieldDef->isKeyField()) ?: $splioFieldDef->isKeyField(),
-          '#attributes' => [
-            'name' => 'radios',
-            'value' => $splioField,
-            (!$splioFieldDef->isKeyField()) ?: 'checked' => 'checked',
-          ],
-        ];
+
+        // Key field radio.
+        $form['entity_fields']['entity_fields_table'][$splioField]['is_key_field'] =
+          [
+            '#type' => 'radio',
+            '#default_value' => empty($splioFieldDef->isKeyField()) ?: $splioFieldDef->isKeyField(),
+            '#attributes' => [
+              'name' => 'radios',
+              'value' => $splioField,
+              (!$splioFieldDef->isKeyField()) ?: 'checked' => 'checked',
+            ],
+          ];
       }
 
+      // Action button.
       $form['entity_fields']['entity_fields_table'][$splioField]['actions'] = [
         '#type' => 'actions',
       ];
 
-      $form['entity_fields']['entity_fields_table'][$splioField]['actions']['remove_splio_field_' . $splioField] = [
-        '#type' => 'button',
-        '#value' => 'Remove',
-        '#disabled' => $splioFieldDef->isDefaultField() ? TRUE : FALSE,
-        '#executes_submit_callback' => FALSE,
-        '#id' => $splioField,
-        '#name' => $splioField,
-        '#ajax' => [
-          'callback' => [$this, 'removeField'],
-          'wrapper' => 'splio-field-form-wrapper',
-          'progress' => [
-            'type' => NULL,
-            'message' => NULL,
+      // Remove action.
+      $form['entity_fields']['entity_fields_table'][$splioField]['actions']['remove_splio_field_' . $splioField] =
+        [
+          '#type' => 'button',
+          '#value' => 'Remove',
+          '#disabled' => $splioFieldDef->isDefaultField() ? TRUE : FALSE,
+          '#executes_submit_callback' => FALSE,
+          '#id' => $splioField,
+          '#name' => $splioField,
+          '#ajax' => [
+            'callback' => [$this, 'removeField'],
+            'wrapper' => 'splio-field-form-wrapper',
+            'progress' => [
+              'type' => NULL,
+              'message' => NULL,
+            ],
           ],
-        ],
-      ];
+        ];
     }
 
     $form['entity_fields']['actions'] = [
       '#type' => 'actions',
     ];
 
+    // Add action.
     $form['entity_fields']['actions']['add_splio_field'] = [
       '#type' => 'button',
       '#value' => 'Add field',
@@ -215,10 +261,12 @@ class SplioFieldForm extends EntityForm {
       ],
     ];
 
+    // Contacts have an extra form that appears below the regular field's form.
     if ($this->currentEntity == 'contacts') {
       $form += $this->generateContactsListForm($form, $form_state);
     }
 
+    // Add some prefix and sufix to make all the forms work together.
     $form['#prefix'] = "<div id='splio-field-form-wrapper'>";
     $form['#suffix'] = "</div>";
 
@@ -282,8 +330,7 @@ class SplioFieldForm extends EntityForm {
               "The %splioField field could not be saved. The field ID must be unique. Another field with the same ID already exists.",
               [
                 '%splioField' => $form_state
-                  ->getUserInput()
-                ['entity_fields_table'][$splioField]['splio_field'],
+                  ->getUserInput()['entity_fields_table'][$splioField]['splio_field'],
               ]
             ), MessengerInterface::TYPE_WARNING);
         }
@@ -313,6 +360,7 @@ class SplioFieldForm extends EntityForm {
       }
     }
 
+    // Save the contact's list form along with the regular form.
     if ($this->currentEntity == 'contacts') {
       $this->saveContactsLists($form, $form_state);
     }
@@ -420,9 +468,9 @@ class SplioFieldForm extends EntityForm {
         // Since the current entity is an entity reference, add each field of
         // the referenced entity to the array.
         foreach ($entityReferenceFields as $entityReferenceDef) {
-          $fieldOptions['Entity: ' . $entityReferenceType . " ({$fieldName})"]
-          ["{{{$fieldName}.{$entityReferenceType}.{$entityReferenceDef->getName()}}}"]
-            = $entityReferenceType . ': ' . $entityReferenceDef->getName();
+          $key = 'Entity: ' . $entityReferenceType . " ({$fieldName})";
+          $reference = "{{{$fieldName}.{$entityReferenceType}.{$entityReferenceDef->getName()}}}";
+          $fieldOptions[$key][$reference] = $entityReferenceType . ': ' . $entityReferenceDef->getName();
         }
       }
       // In case the field is not an entity reference, just add the field to the
