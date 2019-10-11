@@ -39,22 +39,61 @@ use Drupal\splio\SplioFieldInterface;
  * )
  */
 class SplioField extends ConfigEntityBase implements SplioFieldInterface {
+  /**
+   * Unique id.
+   *
+   * @var string
+   */
+  protected $id;
 
-  public $id;
+  /**
+   * The Splio entity the field belongs to.
+   *
+   * @var string
+   */
+  protected $splio_entity;
 
-  public $splio_entity;
+  /**
+   * The Splio field the field matches with.
+   *
+   * @var string
+   */
+  protected $splio_field;
 
-  public $splio_field;
+  /**
+   * The Drupal field the field matches with.
+   *
+   * @var string
+   */
+  protected $drupal_field;
 
-  public $drupal_field;
+  /**
+   * Field type (string, integer, double, date).
+   *
+   * @var string
+   */
+  protected $type_field;
 
-  public $type_field;
+  /**
+   * Defines if the field is considered as a key field by Splio's API.
+   *
+   * @var string
+   */
+  protected $is_key_field;
 
-  public $is_key_field;
+  /**
+   * Defines if the field is one of the default fields of the entity.
+   *
+   * @var string
+   */
+  protected $is_default_field;
 
-  public $is_default_field;
-
-  public $is_new;
+  /**
+   * Defines if the field has just been created.
+   *
+   * @var string
+   */
+  protected $is_new;
 
   /**
    * Sets the field id and returns the instance to the user.
