@@ -26,5 +26,16 @@ Splio currently depends on Drupal 8.x-1.x core version and the latest release of
 
 ## Installation notes
 
-**Note:** The 8.x-1.x release uses [version 1.9](https://webdocs.splio.com/resources/api/) of the Splio API. Splio is currently developing a new API version which improves certain features. In the future is planned to migrate to this new API version
-keeping retrocompatibility.
+**Note:** The 8.x-1.x release uses [version 1.9](https://webdocs.splio.com/resources/api/) of the Splio API. Splio is currently developing a new API version which improves certain features.
+In the future is planned to migrate to this new API version keeping retrocompatibility.
+
+1.  Create a .key file to store your Splio credentials.  If you don't have already your API key, you can [contact](https://www.splio.com/contact-us/) with the Splio team to learn how to obtain one.
+    The file should contain the following data: 
+    ```
+    {
+        "apiKey": "yourApiKey",
+        "universe": "yourUniverse"
+    }
+    ```
+2. In the Key module config page, setup your key as an authentication multivalue key.
+3. Open the Splio settings under the web services menu and configure your environment. Test your connection and save your setiings. You are ready to go!
