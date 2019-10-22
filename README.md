@@ -1,8 +1,8 @@
 This module provides integration with [Splio](https://www.splio.com), a popular customer platform that drives connected loyalty marketing across a great variety of channels.
 Splio module makes it easy for webmasters and Drupal developers to manage and customize how your entities are synchronized with Splio's platform.
 It provides a complete integration with Splio's API, allowing the site administrators to easily sent data to Splio's platform through and intuitive GUI.
-In addition, the module comes ready to be extended/integrated with other services for more customized needs.
-More generally, Splio module aspires to simplify the task of keeping your customer's and sales data up-to-date with Spio. Just configure the module once, and forget about it!
+In addition, the module comes ready to be extended/integrated with other services for more customized business needs.
+More generally, Splio module aspires to simplify the task of keeping your customer's and sales data up-to-date with Splio. Just configure the module once, and forget about it!
 
 ## Core features
 
@@ -51,5 +51,19 @@ In each tab, you can map the relation between your entity fields and Splio field
 It is mandatory to configure the Key Field* for each category. If your categories have no custom fields in Splio and you create them in Drupal, they will generate automatically in Splio by the module.
 At the end of the contacts page there is an extra form attached. This form allows you to configure the field that defines to which newsletters your contacts are subscribed to.
 
+Splio module will record any change in your entities and will sync them with Splio on next cron run.
+
 *Splio API uses the following fields as Key Fields: Contacts: email, Products, Receipts, Order lines, Stores: extid. You can contact the Splio team if you need to use other Key Fields rather than the
 ones provided by default. On demand, a combination of various fields can be established as a Key Field by the Splio team, however this kind of Key Fields are not supported by this module.
+
+## Extending the module
+
+Splio module was designed not only to provide a simple interface for mapping entities between Drupal and Splio, but also to easily be extended by developers in case of having special needs. For that purpose,
+Splio module provides a series of services and events described below:
+
+### Services
+
+### Events
+
+There are three types of events that are triggered at different points of the execution of the Splio module. These events are useful for verifying what data will be synced with Splio and even allowing 
+developers to alter the data before sending it to Splio.
