@@ -63,7 +63,22 @@ Splio module provides a series of services and events described below:
 
 ### Services
 
+Splio module provides the following services that can be injected into other classes in order to integrate them with Splio. These services allow developers to add items to the Splio queue, inmediately sync data
+with Splio, add users to the Blacklist or fire an emailing trigger at a given time.
+
+**SplioConnector**:
+
+**SplioTriggerManager**:
+
+**SplioBlacklistManager**:
+
 ### Events
 
 There are three types of events that are triggered at different points of the execution of the Splio module. These events are useful for verifying what data will be synced with Splio and even allowing 
 developers to alter the data before sending it to Splio.
+
+**SplioQueueEvent**: Dispatches an event whenever an item is going to be added to the module queue. This event allows the user to alter the content of the item that will be queued (even preventing the item from queueing).
+
+**SplioRequestEvent**: Dispatches an event right before a request to Splio is sent. This event allows the user to alter the content of the entity that will be synced with Splio.
+
+**SplioResponseEvent**: Dispatches an event right after a response from Splio is received. This event contains the Splio API response and the sent content.
