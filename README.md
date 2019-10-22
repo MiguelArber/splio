@@ -26,9 +26,6 @@ Splio currently depends on Drupal 8.x-1.x core version and the latest release of
 
 ## Installation notes
 
-**Note:** The 8.x-1.x release uses [version 1.9](https://webdocs.splio.com/resources/api/) of the Splio API. Splio is currently developing a new API version which improves certain features.
-In the future is planned to migrate to this new API version keeping retrocompatibility.
-
 1.  Create a .key file to store your Splio credentials.  If you don't have already your API key, you can [contact](https://www.splio.com/contact-us/) with the Splio team to learn how to obtain one.
     The file should contain the following data: 
     ```
@@ -38,4 +35,21 @@ In the future is planned to migrate to this new API version keeping retrocompati
     }
     ```
 2. In the Key module config page, setup your key as an authentication multivalue key.
-3. Open the Splio settings under the web services menu and configure your environment. Test your connection and save your setiings. You are ready to go!
+3. Open the Splio settings under the Web services menu and configure your environment. Test your connection and save your setiings. You are ready to go!
+
+**Note:** The 8.x-1.x release uses [version 1.9](https://webdocs.splio.com/resources/api/) of the Splio API. Splio is currently developing a new API version which improves certain features.
+In the future is planned to migrate to this new API version keeping retrocompatibility.
+
+## Module configuration
+
+Once you are finished with the installation you can start configuring the sync between your entities and Splio.
+
+Access the Splio entity configuration page under the Web services menu. In this page you can configure which of your entities is the counterpart of each of the Splio categories.
+You can select a whole entity or a particular bundle. New configuration tabs will appear for the categories you just configured.
+
+In each tab, you can map the relation between your entity fields and Splio fields. By default, a series of required fields will be auto-generated.
+It is mandatory to configure the Key Field* for each category. If your categories have no custom fields in Splio and you create them in Drupal, they will generate automatically in Splio by the module.
+At the end of the contacts page there is an extra form attached. This form allows you to configure the field that defines to which newsletters your contacts are subscribed to.
+
+*Splio API uses the following fields as Key Fields: Contacts: email, Products, Receipts, Order lines, Stores: extid. You can contact the Splio team if you need to use other Key Fields rather than the
+ones provided by default. On demand, a combination of various fields can be established as a Key Field by the Splio team, however this kind of Key Fields are not supported by this module.
