@@ -4,7 +4,6 @@ namespace Drupal\splio_utils\Services;
 
 use Drupal\Core\Config\ConfigFactory;
 use Drupal\key\KeyRepository;
-use Drupal\rest\Plugin\ResourceBase;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
@@ -15,6 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * Manages the blacklist of the Splio platform. Allows to check if an email
  * address is blacklisted in Splio and add any email address to the Blacklist.
+ *
  * Due to Splio API limitations, an email address cannot be removed form the
  * blacklist through this module.
  *
@@ -22,8 +22,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @property \Drupal\Core\Config\ConfigFactory config
  * @property \Psr\Log\LoggerInterface logger
  * @package Drupal\splio_utils\Services
- *
- * TODO: Create a parent class with all the similarities with SplioConnector.
  */
 class SplioBlacklistManager {
 

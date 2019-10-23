@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\Event;
  * Defines the events related to the sync activity of the Splio module.
  *
  * This class dispatches events related to the requests made to the Splio API.
- * These events are meant to be dispatched just before a request to Splio is
+ * These events are meant to be dispatched right before a request to Splio is
  * sent.
  *
  * @property array entity

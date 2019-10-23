@@ -22,8 +22,6 @@ use Drupal\rest\ResourceResponse;
  */
 class SplioBlacklistResource extends ResourceBase {
 
-  // TODO: INJECT SERVICE INSTEAD OF USING /DRUPAL::SERVICE
-
   /**
    * Returns whether an email address is blacklisted in Splio or not.
    *

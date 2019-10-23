@@ -24,13 +24,18 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 /**
  * Class SplioConnector.
  *
+ * Manages the data synchronization with Splio. Allows the user to add an entity
+ * to the process queue or directly sync it with Splio platform. Performs the
+ * CRUD actions for any entity or set of entities received and send the requests
+ * concurrently to Splio.
+ *
  * @property \Drupal\Core\Config\ConfigFactory config
  * @property \Drupal\key\KeyRepository keyManager
  * @property \Drupal\Core\Entity\EntityTypeManagerInterface entityTypeManager
  * @property \Drupal\Core\Queue\QueueFactory queueFactory
  * @property \Psr\Log\LoggerInterface logger
  * @property \Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher
- *   eventDispatcher
+ * @property \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher eventDispatcher
  * @package Drupal\splio\Services
  */
 class SplioConnector {
@@ -60,7 +65,7 @@ class SplioConnector {
    *   The entityTypeManager.
    * @param \Drupal\Core\Queue\QueueFactory $queueFactory
    *   The queueFactory.
-   * @param \Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher $eventDispatcher
+   * @param \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $eventDispatcher
    *   The event dispatched for Splio requests.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger. Loads the 'splio' channel.
@@ -117,8 +122,8 @@ class SplioConnector {
    */
   protected function generateBaseUri() {
     $savedKey = ($this->config
-        ->get('splio.settings')
-        ->get('splio_config')) ?? '';
+      ->get('splio.settings')
+      ->get('splio_config')) ?? '';
     $key = empty($this->keyManager->getKey($savedKey)) ?
       ''
       : $this->keyManager
@@ -217,8 +222,8 @@ class SplioConnector {
   public function isSplioEntity(EntityInterface $entity) {
     // Load the current Splio config.
     $splioEntities = ($this->config
-        ->get('splio.entity.config')
-        ->get('splio_entities')) ?? NULL;
+      ->get('splio.entity.config')
+      ->get('splio_entities')) ?? NULL;
 
     if (!empty($splioEntities)) {
       foreach ($splioEntities as $splioEntityType => $splioEntityDef) {
@@ -238,10 +243,10 @@ class SplioConnector {
   }
 
   /**
-   * Returns an array of the contact's lists defined in Splio.
+   * Returns an array containing the contact lists defined in Splio.
    *
    * @return array
-   *   Array containing the contact's lists.
+   *   Array containing the contact lists.
    */
   public function getContactLists() {
     $lists = [];
@@ -731,28 +736,32 @@ class SplioConnector {
    *   The entity which will be added to the queue.
    * @param string $action
    *   CRUD action that will be performed when the received entity is processed.
+   *   Accepts the following parameters: create, update, delete and dequeue.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function addEntityToQueue(EntityInterface $entity, $action) {
+
+    // Check if the received entity is configured as a Splio entity.
     $splioEntityType = $this->isSplioEntity($entity);
 
-    $validActions = [
+    // Defines the valid actions that this method may receive.
+    define('VALID_ACTIONS', [
       'create' => 'create',
       'update' => 'update',
       'delete' => 'delete',
       'dequeue' => 'dequeue',
-    ];
-
-    $item = [];
+    ]);
 
     if ($splioEntityType) {
 
-      if ($splioEntityType == 'order_lines') {
+      // The item that will later be queued.
+      $item = [];
 
-        // If an order_line is received, then the whole receipt (order)
-        // which it belongs to will be updated.
+      // If an order_line is received, then the whole receipt (order)
+      // which it belongs to will be updated.
+      if ($splioEntityType == 'order_lines') {
         $orderEntity = $this->getOrderForOrderLine($entity);
         if (!empty($orderEntity)) {
           $entity = $orderEntity;
@@ -804,9 +813,9 @@ class SplioConnector {
       // update the item before inserting it into the queue.
       $item = $queueEvent->getSplioQueueItem();
 
-      // Perform a last check to ensure the action set is correct.
+      // Finally, perform a last check to ensure the set action is valid.
       if ($item['action'] != 'dequeue') {
-        if (!in_array($item['action'], $validActions)) {
+        if (!in_array($item['action'], VALID_ACTIONS)) {
           $this->logger->error("The %type[%id] entity will not be queued. Action type received: %action. Only 'create', 'update' and 'delete' actions are queued.",
             [
               '%action' => $item['action'],

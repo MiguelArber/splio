@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Drupal\splio_utils\Services;
 
 use Drupal\Core\Config\ConfigFactory;
@@ -13,14 +12,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Class SplioTriggerManager.
  *
- * Manages the emailing triggers of the Splio platform.
+ * Manages the emailing triggers of the Splio platform. Allows the user to
+ * trigger the delivery for a certain message to a defined set of contacts
+ * received by parameter.
  *
  * @property \Drupal\key\KeyRepository keyManager
  * @property \Drupal\Core\Config\ConfigFactory config
  * @property \Psr\Log\LoggerInterface logger
  * @package Drupal\splio_utils\Services
- *
- * TODO: Create a parent class with all the similarities with SplioConnector.
  */
 class SplioTriggerManager {
 
@@ -114,8 +113,6 @@ class SplioTriggerManager {
       ];
     }
 
-
-
     return $url;
   }
 
@@ -162,7 +159,8 @@ class SplioTriggerManager {
    *   Returns FALSE in any other case.
    */
   public function triggerMessage(string $message_id, array $recipients, array $options = NULL) {
-    // In the beginning, the trigger has not been fired yet.
+
+    // Obviously, the trigger has not been fired yet.
     $triggered = FALSE;
 
     // Generate the form params that will be sent in the POST request based in
@@ -175,7 +173,7 @@ class SplioTriggerManager {
     // Add the universe and the key to the $form_params.
     $form_params = array_merge($this->triggerOptions, $form_params);
 
-    // If any optional param was received, it will be added to the request too.
+    // If any optional param were received, added them to the request.
     empty($options) ?: $form_params = array_merge($form_params, $options);
 
     try {
@@ -194,21 +192,6 @@ class SplioTriggerManager {
 
     // Finally return the result of the operation.
     return $triggered;
-  }
-
-  /**
-   * Checks whether the received string has a valid JSON structure.
-   *
-   * @param string $string
-   *   The string to be validated.
-   *
-   * @return bool
-   *   Returns TRUE in case the received string is JSON formatted. Returns FALSE
-   *   in any other case.
-   */
-  private function isValidJson(string $string): bool {
-    json_decode($string);
-    return (json_last_error() == JSON_ERROR_NONE);
   }
 
 }

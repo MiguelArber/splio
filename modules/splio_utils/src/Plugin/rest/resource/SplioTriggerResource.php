@@ -21,8 +21,6 @@ use Drupal\rest\ResourceResponse;
  */
 class SplioTriggerResource extends ResourceBase {
 
-  // TODO: INJECT SERVICE INSTEAD OF USING /DRUPAL::SERVICE
-
   /**
    * Sends a trigger to Splio so the platform sends a message to the recipients.
    *
@@ -44,7 +42,7 @@ class SplioTriggerResource extends ResourceBase {
     ];
 
     // If the triggered was fired, return a 200.
-    // In other any case the trigger could not be fired in Splio, return an 400
+    // In any other case the trigger could not be fired in Splio, return an 400
     // status code instead.
     ($isTriggered) ?
       $resourceResponse->setStatusCode(200)

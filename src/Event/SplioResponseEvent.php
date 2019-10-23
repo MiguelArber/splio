@@ -2,7 +2,6 @@
 
 namespace Drupal\splio\Event;
 
-use org\bovigo\vfs\content\FileContent;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -10,10 +9,10 @@ use Symfony\Component\EventDispatcher\Event;
  * Defines the events related to the sync activity of the Splio module.
  *
  * This class dispatches events related to the responses received by Splio.
- * These events are meant to be dispatched just after a response from Splio is
+ * These events are meant to be dispatched right after a response from Splio is
  * received.
  *
- * @property Psr\Http\Message\ResponseInterface response
+ * @property \Psr\Http\Message\ResponseInterface response
  *   Splio's received response.
  * @property array entityStructure
  *   Splio's sent entity structure.
@@ -38,7 +37,7 @@ class SplioResponseEvent extends Event {
   /**
    * Returns the response received from the Splio API.
    *
-   * @return Psr\Http\Message\ResponseInterface
+   * @return \Psr\Http\Message\ResponseInterface
    *   Returns the result of the HTTP request made to Splio's API.
    */
   public function getSplioResponse() {
