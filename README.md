@@ -66,11 +66,11 @@ Splio module provides a series of services and events described below:
 Splio module provides the following services that can be injected into other classes in order to integrate them with Splio. These services allow developers to add items to the Splio queue, inmediately sync data
 with Splio, add users to the Blacklist or fire an emailing trigger at a given time.
 
-**SplioConnector**:
+**SplioConnector**: Manages the data synchronization with Splio. Provides the CRUD actions for any entity or set of entities received an other helper methods.
 
-**SplioTriggerManager**:
+**SplioTriggerManager**: Manages the emailing triggers of the Splio platform. Allows the user to trigger the delivery for a certain message (REST: /splio/trigger).
 
-**SplioBlacklistManager**:
+**SplioBlacklistManager**: Manages the blacklist of the Splio platform. Allows to check if an email address is blacklisted in Splio and add any email address to the Blacklist (REST: /splio/blacklist).
 
 ### Events
 
