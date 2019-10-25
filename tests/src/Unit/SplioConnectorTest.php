@@ -90,35 +90,37 @@ class SplioConnectorTest extends KernelTestBase {
       "description" => "bad authentication data (UNIVERSE \/ API_KEY)",
     ];
 
+    $responseOK = new Response(200,
+      [
+        'Server' => 'Apache',
+        'Connection' => 'close',
+        'Cache-Control' => 'no-cache',
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Credentials' => 'true',
+        'Access-Control-Allow-Methods' => 'GET, OPTIONS',
+        'Access-Control-Allow-Headers' => 'origin, content-type, accept',
+        'Content-Type' => 'application/json; charset=utf-8',
+      ],
+      json_encode($splioResponseOK)
+    );
+
+    $responseBAD = new Response(401,
+      [
+        'Server' => 'Apache',
+        'Connection' => 'close',
+        'Cache-Control' => 'no-cache',
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Credentials' => 'true',
+        'Access-Control-Allow-Methods' => 'GET, OPTIONS',
+        'Access-Control-Allow-Headers' => 'origin, content-type, accept',
+        'Content-Type' => 'application/json; charset=utf-8',
+      ],
+      json_encode($splioResponseBAD)
+    );
+
     // Guzzle mock client.
-    $this->mock = new MockHandler([
-      new Response(200,
-        [
-          'Server' => 'Apache',
-          'Connection' => 'close',
-          'Cache-Control' => 'no-cache',
-          'Access-Control-Allow-Origin' => '*',
-          'Access-Control-Allow-Credentials' => 'true',
-          'Access-Control-Allow-Methods' => 'GET, OPTIONS',
-          'Access-Control-Allow-Headers' => 'origin, content-type, accept',
-          'Content-Type' => 'application/json; charset=utf-8',
-        ],
-        json_encode($splioResponseOK),
-      ),
-      new Response(401,
-        [
-          'Server' => 'Apache',
-          'Connection' => 'close',
-          'Cache-Control' => 'no-cache',
-          'Access-Control-Allow-Origin' => '*',
-          'Access-Control-Allow-Credentials' => 'true',
-          'Access-Control-Allow-Methods' => 'GET, OPTIONS',
-          'Access-Control-Allow-Headers' => 'origin, content-type, accept',
-          'Content-Type' => 'application/json; charset=utf-8',
-        ],
-        json_encode($splioResponseBAD),
-      ),
-    ]);
+    $this->mock = new MockHandler([$responseOK, $responseBAD]);
+
     $this->handler = HandlerStack::create($this->mock);
     $this->client = new Client(['handler' => $this->handler]);
 
