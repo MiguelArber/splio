@@ -1,9 +1,8 @@
 type: module
 name: 'Splio utils'
-description: 'Provides extended functionalities oriented to developers (such as blacklists and triggers) to Splio module.'
+description: 'Provides extended features oriented to developers (such as blacklists and triggers) to Splio module.'
 package: Splio
 dependencies:
-  - key
-  - splio
-version: '8.x-1.0.0'
+  - drupal:key
+  - drupal:splio
 core: '8.x'
