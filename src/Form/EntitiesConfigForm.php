@@ -170,7 +170,6 @@ class EntitiesConfigForm extends ConfigFormBase {
       ],
     ];
 
-
     $splioEntities = static::SPLIO_ENTITIES;
     $this->contentEntities = $this
       ->entityTypeRepository
@@ -212,9 +211,11 @@ class EntitiesConfigForm extends ConfigFormBase {
         (empty($config[$splioEntity]['local_entity']) ?: $config[$splioEntity]['local_entity'])
         : $form_state->getUserInput()['entity_config_table'][$splioEntity]['local_entity'];
 
+      $bundles = $this->getEntityBundles($entityUserInput);
+
       $form['entity_config']['entity_config_table'][$splioEntity]['local_entity_bundle'] = [
         '#type' => 'select',
-        '#options' => $bundles = $this->getEntityBundles($entityUserInput),
+        '#options' => $bundles,
         '#empty_value' => '',
         '#default_value' => empty($form_state
           ->getUserInput()['entity_config_table'][$splioEntity]['local_entity']) ?
@@ -227,7 +228,7 @@ class EntitiesConfigForm extends ConfigFormBase {
       $form['entity_config']['entity_config_table'][$splioEntity]['local_entity_bundle']['#attributes'] = ['style' => 'color:grey;'];
     }
 
-    // D8_BUG??: Removes the fix element from the form after creating the form.
+    // Removes the fix element from the form after creating the form.
     array_pop($form['entity_config']['entity_config_table']);
 
     return parent::buildForm($form, $form_state);
@@ -309,8 +310,6 @@ class EntitiesConfigForm extends ConfigFormBase {
    *
    * @return array
    *   Returns the updated form.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function updateBundleSelect(array $form, FormStateInterface $form_state) {
     $splioEntities = static::SPLIO_ENTITIES;
@@ -325,13 +324,13 @@ class EntitiesConfigForm extends ConfigFormBase {
       if ($splioEntity == $this->currentSplioEntity) {
         $form['entity_config']['entity_config_table'][$splioEntity]['local_entity_bundle'] = [
           '#type' => 'select',
-          '#options' => empty($bundles) ? '' : $bundles,
+          '#options' => '',
           '#empty_value' => '',
           '#default_value' => '',
-          '#disabled' => empty($bundles) ? TRUE : FALSE,
+          '#disabled' => TRUE,
         ];
-        !empty($bundles) ?:
-          $form['entity_config']['entity_config_table'][$splioEntity]['local_entity_bundle']['#attributes'] = ['style' => 'color:grey;'];
+
+        $form['entity_config']['entity_config_table'][$splioEntity]['local_entity_bundle']['#attributes'] = ['style' => 'color:grey;'];
       }
 
       // Some UI changes so the form is more intuitive.
@@ -341,12 +340,7 @@ class EntitiesConfigForm extends ConfigFormBase {
         $form['entity_config']['entity_config_table'][$splioEntity]['local_entity']['#description'] = '<span>' . $this
           ->t("Saved config for %splioEntity will be lost!", ['%splioEntity' => $this->splioEntityLabel[$splioEntity]]) . '</span>';
         $form['entity_config']['entity_config_table'][$splioEntity]['local_entity']['#attributes'] = ['style' => 'color:red;'];
-        if (empty($bundles)) {
-          $form['entity_config']['entity_config_table'][$splioEntity]['local_entity_bundle']['#disabled'] = TRUE;
-        }
-        else {
-          $form['entity_config']['entity_config_table'][$splioEntity]['local_entity_bundle']['#attributes'] = ['style' => 'color:red;'];
-        }
+        $form['entity_config']['entity_config_table'][$splioEntity]['local_entity_bundle']['#disabled'] = TRUE;
       }
     }
 
