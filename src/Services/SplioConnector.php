@@ -24,9 +24,11 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 /**
  * Class SplioConnector.
  *
- * Manages the data synchronization with Splio. Allows the user to add an entity
+ * Manages the data synchronization with Splio. Allows the user to add an
+ * entity
  * to the process queue or directly sync it with Splio platform. Performs the
- * CRUD actions for any entity or set of entities received and send the requests
+ * CRUD actions for any entity or set of entities received and send the
+ * requests
  * concurrently to Splio.
  *
  * @property \Drupal\Core\Config\ConfigFactory config
@@ -35,7 +37,8 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * @property \Drupal\Core\Queue\QueueFactory queueFactory
  * @property \Psr\Log\LoggerInterface logger
  * @property \Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher
- * @property \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher eventDispatcher
+ * @property \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
+ *   eventDispatcher
  * @package Drupal\splio\Services
  */
 class SplioConnector {
@@ -122,8 +125,8 @@ class SplioConnector {
    */
   protected function generateBaseUri() {
     $savedKey = ($this->config
-      ->get('splio.settings')
-      ->get('splio_config')) ?? '';
+        ->get('splio.settings')
+        ->get('splio_config')) ?? '';
     $key = empty($this->keyManager->getKey($savedKey)) ?
       ''
       : $this->keyManager
@@ -198,7 +201,8 @@ class SplioConnector {
         $this->client->request('GET');
       }
       $successfulConnection = TRUE;
-    } catch (GuzzleException $e) {
+    }
+    catch (GuzzleException $e) {
       return $successfulConnection;
     }
 
@@ -254,7 +258,8 @@ class SplioConnector {
     try {
       $uri = $this->baseUri . 'lists';
       $lists = json_decode($this->client->get($uri)->getBody(), TRUE);
-    } catch (RequestException $exception) {
+    }
+    catch (RequestException $exception) {
       $this->logger
         ->error("Unable to get Splio contact lists: " . $exception);
     }
@@ -428,7 +433,6 @@ class SplioConnector {
           yield function () use ($uri, $keyField) {
             return $this->client->getAsync($uri)->then(
               function (ResponseInterface $response) use ($keyField) {
-                $keyFields[] = $keyField;
                 try {
 
                   // Manage the event to be dispatched.
@@ -938,7 +942,7 @@ class SplioConnector {
         $fieldValues = $entity->get($field)->getValue();
 
         if (is_array($fieldValues) && count($fieldValues) > 1) {
-          foreach ($fieldValues as $fieldKey => $fieldDef) {
+          foreach ($fieldValues as $fieldDef) {
             array_push($value, end($fieldDef));
           }
           $value = implode(", ", $value);
@@ -1188,7 +1192,8 @@ class SplioConnector {
           ->getStorage('splio_field')
           ->loadByProperties(['splio_entity' => 'receipts'])[$orderKeyField]
           ->getDrupalField();
-      } catch (\Exception $exception) {
+      }
+      catch (\Exception $exception) {
         $this->logger
           ->error("Error trying to fetch Receipts key field. Check that your Receipts key field, and the 'order_id' field from Order Lines, are configured properly.");
       }
@@ -1326,7 +1331,8 @@ class SplioConnector {
       }
       catch (\Error $error) {
         $this->logger
-          ->error("Error trying to fetch the %drupalFieldEntityReference[1] entity referenced from the field %drupalFieldEntityReference[0] of the %entity->getEntityTypeId() entity. Check that your fields are configured properly.",
+          ->error("Error trying to fetch the
+          %drupalFieldEntityReference[1] entity referenced from the field %drupalFieldEntityReference[0] of the %entity->getEntityTypeId() entity. Check that your fields are configured properly.",
             [
               '%drupalFieldEntityReference[1]' => $drupalFieldEntityReference[1],
               '%drupalFieldEntityReference[0]' => $drupalFieldEntityReference[0],
@@ -1350,46 +1356,6 @@ class SplioConnector {
         $this->getEntityReferenceValue($entityRefField, $entityRef);
       }
       else {
-
-        // Uncomment below in case we want to smartly load the key field instead
-        // of the selected field for an entity reference to a Splio entity.
-        /*
-        $entitySplioEntity = $this->isSplioEntity($entityRef);
-        if ($entitySplioEntity) {
-          $entitySplioConfig = $this->config
-            ->get('splio.entity.config')
-            ->get('splio_entities')[$entitySplioEntity];
-
-          $entityKeyField = $entitySplioConfig['splio_entity_key_field'];
-
-          // Then, load the Drupal field which is mapped as the key field
-          // for the referenced entity.
-          try {
-            $entityKeyDrupalField = $this->entityTypeManager
-              ->getStorage('splio_field')
-              ->loadByProperties(['splio_entity' => $entitySplioEntity])[$entityKeyField]->getDrupalField();
-
-            $entityRefField = [
-              $entityRef->get($entityKeyDrupalField)
-                ->getName() => end($entityRef->get($entityKeyDrupalField)
-                ->getValue()[0]),
-            ];
-          } catch (\Exception $exception) {
-            $this->logger
-              ->error("Error trying to fetch %entityKeyField key field. Check that your %entity key field is configured properly.",
-                [
-                  '%entityKeyField' => $entityKeyField,
-                  '%entity' => $entitySplioEntity,
-                ]);
-          }
-        }
-        else {
-          $entityRefField = [
-            $entityRefField->getName() => end($entityRefField->getValue()[0]),
-          ];
-        }
-        */
-
         $entityRefField = [
           $entityRefField->getName() => end($entityRefField->getValue()[0]),
         ];
