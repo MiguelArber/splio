@@ -8,7 +8,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\splio\Services\SplioConnector;
 use Drupal\Core\Queue\SuspendQueueException;
-use Drupal\Core\Queue\RequeueException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
