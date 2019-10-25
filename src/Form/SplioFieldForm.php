@@ -5,6 +5,7 @@ namespace Drupal\splio\Form;
 use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Entity\EntityFormBuilder;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  * @property \Drupal\Core\Path\CurrentPathStack currentPathStack
  * @property \Drupal\Core\Cache\Cache cache
  * @property \Drupal\splio\Services\SplioConnector splioConnector
+ * @property \Drupal\Core\Entity\EntityFormBuilder formBuilder
  */
 class SplioFieldForm extends EntityForm {
 
@@ -34,7 +36,7 @@ class SplioFieldForm extends EntityForm {
   private $splioEntity;
 
   /**
-   * SThe Splio entity being managed currently by the form.
+   * The Splio entity being managed currently by the form.
    *
    * @var string
    */
@@ -45,28 +47,28 @@ class SplioFieldForm extends EntityForm {
    *
    * @var array
    */
-  private $entityFields = array();
+  private $entityFields = [];
 
   /**
    * Stores the entity being managed currently by the form.
    *
    * @var array
    */
-  private $fieldOptions = array();
+  private $fieldOptions = [];
 
   /**
    * Splio lists -loaded locally- to which the contacts can be subscribed.
    *
    * @var array
    */
-  private $contactsLists = array();
+  private $contactsLists = [];
 
   /**
    * Splio lists -remotely fetched- to which the contacts can be subscribed.
    *
    * @var array
    */
-  private $remoteContactsLists = array();
+  private $remoteContactsLists = [];
 
   /**
    * Constructs an SplioEntityConfigForm object.
@@ -81,18 +83,22 @@ class SplioFieldForm extends EntityForm {
    *   The currentPathStack.
    * @param \Drupal\splio\Services\SplioConnector $splioConnector
    *   The splioConnector service.
+   * @param \Drupal\Core\Entity\EntityFormBuilder $formBuilder
+   *   The formBuilder.
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
     EntityFieldManager $entityFieldManager,
     ConfigFactory $config,
     CurrentPathStack $currentPathStack,
-    SplioConnector $splioConnector) {
+    SplioConnector $splioConnector,
+    EntityFormBuilder $formBuilder) {
     $this->entityTypeManager = $entityTypeManager;
     $this->entityFieldManager = $entityFieldManager;
     $this->config = $config;
     $this->currentPathStack = $currentPathStack;
     $this->splioConnector = $splioConnector;
+    $this->formBuilder = $formBuilder;
     $this->checkEntityConfiguration();
   }
 
@@ -105,7 +111,8 @@ class SplioFieldForm extends EntityForm {
       $container->get('entity_field.manager'),
       $container->get('config.factory'),
       $container->get('path.current'),
-      $container->get('splio.splio_connector')
+      $container->get('splio.splio_connector'),
+      $container->get('entity.form_builder')
     );
   }
 
@@ -520,8 +527,7 @@ class SplioFieldForm extends EntityForm {
     $values['entity_fields'] = $entityFields;
 
     try {
-      \Drupal::service('entity.form_builder')
-        ->getForm($this->entity, 'edit', $values);
+      $this->formBuilder->getForm($this->entity, 'edit', $values);
     }
     catch (\Exception $e) {
       $errors = $e->getFormState()->getErrors();
@@ -556,8 +562,7 @@ class SplioFieldForm extends EntityForm {
     $values['entity_fields'] = $entityFields;
 
     try {
-      \Drupal::service('entity.form_builder')
-        ->getForm($this->entity, 'edit', $values);
+      $this->formBuilder->getForm($this->entity, 'edit', $values);
     }
     catch (\Exception $e) {
       $errors = $e->getFormState()->getErrors();
@@ -603,8 +608,8 @@ class SplioFieldForm extends EntityForm {
         'id' => 'list_fields',
       ],
       '#header' => [
-        $splio_list = $this->t('Contacts list'),
-        $drupal_list_field = $this->t('Local list field'),
+        $this->t('Contacts list'),
+        $this->t('Local list field'),
       ],
     ];
 
