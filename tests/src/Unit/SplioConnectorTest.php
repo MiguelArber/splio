@@ -12,6 +12,8 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 
 /**
+ * Provides a series of unit tests for the Splio module.
+ *
  * @property mixed splioConnector
  * @coversDefaultClass \Drupal\splio\Services\SplioConnector
  * @group splio
@@ -201,7 +203,7 @@ class SplioConnectorTest extends KernelTestBase {
 
   /**
    * Tests the createEntities() function.
-   * 
+   *
    * @todo Create the CreateEntities test.
    */
   public function testCreateEntities(): void {
