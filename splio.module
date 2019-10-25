@@ -12,7 +12,6 @@ use Drupal\Core\Routing\RouteMatchInterface;
 /**
  * Implements hook_help().
  */
-
 function splio_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     // Main module help for the splio module.
