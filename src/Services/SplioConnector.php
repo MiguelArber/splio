@@ -125,8 +125,8 @@ class SplioConnector {
    */
   protected function generateBaseUri() {
     $savedKey = ($this->config
-        ->get('splio.settings')
-        ->get('splio_config')) ?? '';
+      ->get('splio.settings')
+      ->get('splio_config')) ?? '';
     $key = empty($this->keyManager->getKey($savedKey)) ?
       ''
       : $this->keyManager
@@ -1117,7 +1117,6 @@ class SplioConnector {
         if (!empty($fieldValue)) {
           $fieldValue = is_array($fieldValue) ? end($fieldValue) : $fieldValue;
         }
-
 
         if ($field->isDefaultField()) {
           $orderLineFields[$entityKey][$splioField] = $fieldValue;
