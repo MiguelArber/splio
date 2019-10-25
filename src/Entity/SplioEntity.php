@@ -15,9 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class SplioEntity {
 
-  /**
-   * Used to provides dependency injection methods for serialization.
-   */
+  // Used to provide dependency injection methods for serialization.
   use DependencySerializationTrait;
 
   /**
@@ -60,7 +58,7 @@ class SplioEntity {
    *
    * @var array
    */
-  private $splioEntityFields = array();
+  private $splioEntityFields = [];
 
   /**
    * Defines the entity default fields for each Splio entity type.
