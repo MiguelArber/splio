@@ -31,7 +31,7 @@ class SplioTriggerManager {
     'splio_trigger' => 'trigger/nph-9.pl/',
   ];
 
-  private $triggerOptions = array();
+  private $triggerOptions = [];
 
   /**
    * SplioTriggerManager constructor.
