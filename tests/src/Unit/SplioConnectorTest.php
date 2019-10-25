@@ -29,7 +29,9 @@ class SplioConnectorTest extends KernelTestBase {
   ];
 
   private $mock;
+
   private $handler;
+
   private $client;
 
   private $fakeEntity;
@@ -37,7 +39,7 @@ class SplioConnectorTest extends KernelTestBase {
   /**
    * Creates a new processor object for use in the tests.
    */
-  public function setUp() : void {
+  public function setUp(): void {
     parent::setUp();
 
     // Splio field entity schema.
@@ -158,19 +160,18 @@ class SplioConnectorTest extends KernelTestBase {
     // Guzzle mock client.
     $this->mock = new MockHandler([
       new Response(200,
-      [
-        'Server' => 'Apache',
-        'Connection' => 'close',
-        'Cache-Control' => 'no-cache',
-        'Access-Control-Allow-Origin' => '*',
-        'Access-Control-Allow-Credentials' => 'true',
-        'Access-Control-Allow-Methods' => 'GET, OPTIONS',
-        'Access-Control-Allow-Headers' => 'origin, content-type, accept',
-        'Content-Type' => 'application/json; charset=utf-8',
+        [
+          'Server' => 'Apache',
+          'Connection' => 'close',
+          'Cache-Control' => 'no-cache',
+          'Access-Control-Allow-Origin' => '*',
+          'Access-Control-Allow-Credentials' => 'true',
+          'Access-Control-Allow-Methods' => 'GET, OPTIONS',
+          'Access-Control-Allow-Headers' => 'origin, content-type, accept',
+          'Content-Type' => 'application/json; charset=utf-8',
 
-      ],
-        json_encode([]),
-      ),
+        ],
+        json_encode([])),
       new Response(200,
         [
           'Server' => 'Apache',
@@ -183,8 +184,7 @@ class SplioConnectorTest extends KernelTestBase {
           'Content-Type' => 'application/json; charset=utf-8',
 
         ],
-        json_encode($splioLists),
-      ),
+        json_encode($splioLists)),
     ]);
     $this->handler = HandlerStack::create($this->mock);
     $this->client = new Client(['handler' => $this->handler]);
