@@ -1,7 +1,22 @@
 {
-  "name": "drupal/splio",
-  "type": "drupal-module",
-  "require": {
-      "drupal/key": "*"
-  }
+    "name": "drupal/splio",
+    "description": "Provides a series of features and services to synchronize Drupal entities with Splio.",
+    "type": "drupal-module",
+    "authors": [
+        {
+            "name": "Miguel Arber Magjistari Pulaci",
+            "email": "miguel.arber@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.0",
+        "drupal/key": "*"
+    },
+    "extra": {
+        "drush": {
+            "services": {
+                "drush.services.yml": "^9"
+            }
+        }
+    }
 }
