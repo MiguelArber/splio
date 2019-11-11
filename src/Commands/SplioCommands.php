@@ -128,7 +128,7 @@ class SplioCommands extends DrushCommands {
       ->get('splio_entities')) ?? NULL;
 
     if (!empty($splioEntities)) {
-      foreach ($splioEntities as $splioEntityType => $splioEntityDef) {
+      foreach ($splioEntities as $splioEntityDef) {
 
         $splioEntity = $splioEntityDef['local_entity'];
         $splioBundle = $splioEntityDef['local_entity_bundle'];

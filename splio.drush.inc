@@ -30,7 +30,6 @@ function splio_drush_command() {
   return $items;
 }
 
-
 /**
  * Add an entity the queue in order to be processed later by Splio.
  *
@@ -97,7 +96,7 @@ function splio_drush_validate_option_entity_type($entity_type) {
     ->get('splio_entities')) ?? NULL;
 
   if (!empty($splioEntities)) {
-    foreach ($splioEntities as $splioEntityType => $splioEntityDef) {
+    foreach ($splioEntities as $splioEntityDef) {
 
       $splioEntity = $splioEntityDef['local_entity'];
       $splioBundle = $splioEntityDef['local_entity_bundle'];
