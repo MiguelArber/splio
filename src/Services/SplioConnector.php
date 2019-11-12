@@ -324,6 +324,15 @@ class SplioConnector {
           // entityStructure, update the entityStructure.
           $entityStructure = $requestEvent->getSplioEntity();
 
+          // Manage the entity key.
+          $keyField = (key($entityStructure['keyField'])) ?? NULL;
+          $keyFieldValue = $entityStructure['keyField'][$keyField];
+
+          // If the entity has no keyField it cannot be synced with Splio.
+          if (empty($keyFieldValue)) {
+            continue;
+          }
+
           // Generate the URI based on the variables that have been just set.
           $uri = $this->baseUri . $currentEntityType;
 
@@ -425,6 +434,11 @@ class SplioConnector {
           // Manage the key that will be used to make the request.
           $keyField = (key($entityStructure['keyField'])) ?? NULL;
           $keyFieldValue = $entityStructure['keyField'][$keyField];
+
+          // If the entity has no keyField it cannot be synced with Splio.
+          if (empty($keyFieldValue)) {
+            continue;
+          }
 
           // Generate the URI based on the variables that have been just set.
           $uri = $this->baseUri . $currentEntity . $keyFieldValue;
@@ -558,6 +572,11 @@ class SplioConnector {
             $entityStructure['keyField'][$keyField]
             : end($entity->original->get($drupalKeyField)->getValue()[0]);
 
+          // If the entity has no keyField it cannot be synced with Splio.
+          if (empty($keyFieldValue)) {
+            continue;
+          }
+
           // Generate the URI based on the variables that have been just set.
           $uri = $this->baseUri . $currentEntity . $keyFieldValue;
 
@@ -645,6 +664,11 @@ class SplioConnector {
             // Manage the key that will be used to make the request.
             $keyField = (key($entityStructure['keyField'])) ?? NULL;
             $keyFieldValue = $entityStructure['keyField'][$keyField];
+
+            // If the entity has no keyField it cannot be synced with Splio.
+            if (empty($keyFieldValue)) {
+              continue;
+            }
 
             // Generate the URI based on the variables that have been just set.
             $uri = $this->baseUri . $currentEntity . $keyFieldValue;
