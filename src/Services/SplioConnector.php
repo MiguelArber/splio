@@ -342,7 +342,7 @@ class SplioConnector {
                 'body' => json_encode($entityStructure),
               ]
             )->then(
-              function (ResponseInterface $response, $entityStructure) {
+              function (ResponseInterface $response) use ($entityStructure) {
 
                 // Manage the event to be dispatched.
                 $responseEvent = new SplioResponseEvent($response, $entityStructure);
@@ -464,7 +464,7 @@ class SplioConnector {
               },
               function (RequestException $exception) {
                 $this->logger
-                  ->error("Unable to fetch/send data from Splio API. %message.",
+                  ->notice("Unable to retrieve data from Splio API. %message.",
                     [
                       '%message' => $exception->getMessage(),
                     ]);
@@ -585,7 +585,7 @@ class SplioConnector {
                 'body' => json_encode($entityStructure),
               ]
             )->then(
-              function (ResponseInterface $response, $entityStructure) {
+              function (ResponseInterface $response) use ($entityStructure) {
 
                 // Manage the event to be dispatched.
                 $responseEvent = new SplioResponseEvent($response, $entityStructure);
@@ -672,9 +672,9 @@ class SplioConnector {
             $uri = $this->baseUri . $currentEntity . $keyFieldValue;
 
             // Returns a promise once the function has finished.
-            yield function () use ($uri) {
+            yield function () use ($uri, $entityStructure) {
               return $this->client->deleteAsync($uri)->then(
-                function (ResponseInterface $response, $entityStructure) {
+                function (ResponseInterface $response) use ($entityStructure) {
 
                   // Manage the event to be dispatched.
                   $responseEvent = new SplioResponseEvent($response, $entityStructure);
