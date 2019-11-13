@@ -19,7 +19,6 @@ use GuzzleHttp\Pool;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class SplioConnector.
@@ -37,8 +36,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * @property \Drupal\Core\Queue\QueueFactory queueFactory
  * @property \Psr\Log\LoggerInterface logger
  * @property \Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher
- * @property \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
- *   eventDispatcher
+ * @property \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher eventDispatcher
  * @package Drupal\splio\Services
  */
 class SplioConnector {
@@ -125,8 +123,8 @@ class SplioConnector {
    */
   protected function generateBaseUri() {
     $savedKey = ($this->config
-      ->get('splio.settings')
-      ->get('splio_config')) ?? '';
+        ->get('splio.settings')
+        ->get('splio_config')) ?? '';
     $key = empty($this->keyManager->getKey($savedKey)) ?
       ''
       : $this->keyManager
@@ -226,8 +224,8 @@ class SplioConnector {
   public function isSplioEntity(EntityInterface $entity) {
     // Load the current Splio config.
     $splioEntities = ($this->config
-      ->get('splio.entity.config')
-      ->get('splio_entities')) ?? NULL;
+        ->get('splio.entity.config')
+        ->get('splio_entities')) ?? NULL;
 
     if (!empty($splioEntities)) {
       foreach ($splioEntities as $splioEntityType => $splioEntityDef) {
@@ -835,7 +833,7 @@ class SplioConnector {
       // Manage the event to be dispatched.
       $queueEvent = new SplioQueueEvent($item);
       $this->eventDispatcher
-        ->dispatch(SplioQueueEvent::SPLIO_EVENT, $queueEvent);
+        ->dispatch(SplioQueueEvent::SPLIO_ENQUEUE, $queueEvent);
 
       // In case someone captured the event and made changes in the item,
       // update the item before inserting it into the queue.
@@ -923,6 +921,14 @@ class SplioConnector {
       else {
         $entityStructure['products'] =
           $this->generateOrderLinesStructure($entity);
+
+        // Perform a check to ensure there are no order_lines with empty key.
+        foreach ($entityStructure['products'] as $productKey => $productDef) {
+          if (empty($productDef['extid'])) {
+            unset($entityStructure['products'][$productKey]);
+          }
+        }
+
       }
     }
 
