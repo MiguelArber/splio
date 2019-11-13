@@ -351,11 +351,12 @@ class SplioConnector {
 
                 return $response;
               },
-              function (RequestException $exception) {
+              function (RequestException $exception) use ($entityStructure) {
                 $this->logger
-                  ->error("Unable to fetch/send data from Splio API. %message.",
+                  ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
                     [
                       '%message' => $exception->getMessage(),
+                      '%entityStructure' => json_encode($entityStructure),
                     ]);
                 throw $exception;
               }
@@ -594,11 +595,12 @@ class SplioConnector {
 
                 return $response;
               },
-              function (RequestException $exception) {
+              function (RequestException $exception) use ($entityStructure) {
                 $this->logger
-                  ->error("Unable to fetch/send data from Splio API. %message.",
+                  ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
                     [
                       '%message' => $exception->getMessage(),
+                      '%entityStructure' => json_encode($entityStructure),
                     ]);
                 throw $exception;
               }
@@ -683,11 +685,12 @@ class SplioConnector {
 
                   return $response;
                 },
-                function (RequestException $exception) {
+                function (RequestException $exception) use ($entityStructure) {
                   $this->logger
-                    ->error("Unable to fetch/send data from Splio API. %message.",
+                    ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
                       [
                         '%message' => $exception->getMessage(),
+                        '%entityStructure' => json_encode($entityStructure),
                       ]);
                   throw $exception;
                 }
