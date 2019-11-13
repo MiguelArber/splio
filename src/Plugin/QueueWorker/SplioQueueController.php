@@ -133,9 +133,13 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
     }
 
     // Manage the event to be dispatched.
-    $requestEvent = new SplioQueueEvent($data);
+    $queueEvent = new SplioQueueEvent($data);
     $this->eventDispatcher
-      ->dispatch(SplioQueueEvent::SPLIO_DEQUEUE, $requestEvent);
+      ->dispatch(SplioQueueEvent::SPLIO_DEQUEUE, $queueEvent);
+
+    // In case someone captured the event and made changes in the item,
+    // update the item before inserting it into the queue.
+    $data = $queueEvent->getSplioQueueItem();
 
     // If there is any, add the original entity to the current entity.
     empty($data['original']) ?: end($entity)->original = $data['original'];
