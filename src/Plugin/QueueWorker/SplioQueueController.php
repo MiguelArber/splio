@@ -2,12 +2,14 @@
 
 namespace Drupal\splio\Plugin\QueueWorker;
 
+use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\splio\Services\SplioConnector;
 use Drupal\Core\Queue\SuspendQueueException;
+use Drupal\splio\Event\SplioQueueEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -17,6 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @property \Drupal\Core\Entity\EntityManager entityManager
  * @property \Drupal\splio\Services\SplioConnector splioConnector
  * @property \Drupal\Core\Config\ConfigFactory config
+ * @property \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher eventDispatcher
  * @property \Psr\Log\LoggerInterface logger
  * @QueueWorker(
  *   id = "cron_splio_sync",
@@ -35,12 +38,15 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
    *   The splioConnector service.
    * @param \Drupal\Core\Config\ConfigFactory $config
    *   The configFactory service.
+   * @param \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $eventDispatcher
+   *   The event dispatched for Splio requests.
    * @param \Psr\Log\LoggerInterface $logger
    *   The loggerInterface service.
    */
-  public function __construct(EntityManager $entityManager, SplioConnector $splioConnector, ConfigFactory $config, LoggerInterface $logger) {
+  public function __construct(EntityManager $entityManager, SplioConnector $splioConnector, ConfigFactory $config, ContainerAwareEventDispatcher $eventDispatcher, LoggerInterface $logger) {
     $this->entityManager = $entityManager;
     $this->splioConnector = $splioConnector;
+    $this->eventDispatcher = $eventDispatcher;
     $this->config = $config;
     $this->logger = $logger;
   }
@@ -56,6 +62,7 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
       $container->get('entity.manager'),
       $container->get('splio.splio_connector'),
       $container->get('config.factory'),
+      $container->get('event_dispatcher'),
       $logger
     );
   }
@@ -124,6 +131,11 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
           ]);
       return;
     }
+
+    // Manage the event to be dispatched.
+    $requestEvent = new SplioQueueEvent($data);
+    $this->eventDispatcher
+      ->dispatch(SplioQueueEvent::SPLIO_DEQUEUE, $requestEvent);
 
     // If there is any, add the original entity to the current entity.
     empty($data['original']) ?: end($entity)->original = $data['original'];
