@@ -18,7 +18,8 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class SplioQueueEvent extends Event {
 
-  const SPLIO_EVENT = 'splio_event.queue';
+  const SPLIO_ENQUEUE = 'splio_event.enqueue';
+  const SPLIO_DEQUEUE = 'splio_event.dequeue';
 
   /**
    * SplioQueueEvent constructor.
