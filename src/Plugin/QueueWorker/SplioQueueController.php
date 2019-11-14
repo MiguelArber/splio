@@ -120,7 +120,6 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
       // provided data['original'] entity will be used as the current entity.
       if (empty($entity) && !(empty($data['original']))) {
         $entity = [$data['original']];
-        $data['original'] = NULL;
       }
     }
     catch (\Exception $exception) {
@@ -132,6 +131,9 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
       return;
     }
 
+    // If there is any, add the original entity to the current entity.
+    empty($data['original']) ?: end($entity)->original = $data['original'];
+
     // Manage the event to be dispatched.
     $queueEvent = new SplioQueueEvent($data);
     $this->eventDispatcher
@@ -141,31 +143,32 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
     // update the item before inserting it into the queue.
     $data = $queueEvent->getSplioQueueItem();
 
-    // If there is any, add the original entity to the current entity.
-    empty($data['original']) ?: end($entity)->original = $data['original'];
 
     // Set the CRUD action to be performed by the SplioConnector service.
     $action = $data['action'] . 'Entities';
 
-    // Execute the action.
-    $result = $this->splioConnector->$action($entity);
+    if (method_exists($this->splioConnector, $action)) {
 
-    // In case there the element in the result array turns to be an exception
-    // object, throw it!
-    if (is_subclass_of(end($result), 'Exception')) {
+      // If the received action is valid, execute it.
+      $result = $this->splioConnector->$action($entity);
 
-      // Get the exception.
-      $exception = end($result);
+      // In case there the element in the result array turns to be an exception
+      // object, throw it!
+      if (is_subclass_of(end($result), 'Exception')) {
 
-      // If the exception code is 500 try again later.
-      if ($exception->getCode() == 500) {
-        throw new SuspendQueueException('Splio server is not responding. Aborting sync...');
-      }
-      else {
-        // Mind that the exception below will cause the queue to stop running in
-        // case it was executed via drush queue-run. The queue is meant to be
-        // handled by cron.
-        throw new \Exception("A problem occurred, the " . $data['id'] . " item cannot not be processed at this moment.");
+        // Get the exception.
+        $exception = end($result);
+
+        // If the exception code is 500 try again later.
+        if ($exception->getCode() == 500) {
+          throw new SuspendQueueException('Splio server is not responding. Aborting sync...');
+        }
+        else {
+          // Mind that the exception below will cause the queue to stop running in
+          // case it was executed via drush queue-run. The queue is meant to be
+          // handled by cron.
+          throw new \Exception("A problem occurred, the " . $data['id'] . " item cannot not be processed at this moment.");
+        }
       }
     }
 
