@@ -825,7 +825,7 @@ class SplioConnector {
         'id' => end($entity
           ->get($entityKeyField)
           ->getValue()[0]),
-        'original' => $entity->original ?? $action == 'delete' ? $entity : NULL,
+        'original' => $entity->original ?? ($action == 'delete' ? $entity : NULL),
         'splioEntityType' => $splioEntityType,
         'action' => $action,
       ];
