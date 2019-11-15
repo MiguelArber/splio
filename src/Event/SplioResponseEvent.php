@@ -2,7 +2,6 @@
 
 namespace Drupal\splio\Event;
 
-use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -12,8 +11,8 @@ use Symfony\Component\EventDispatcher\Event;
  * These events are meant to be dispatched right after a response from Splio is
  * received.
  *
- * @property \Psr\Http\Message\ResponseInterface response
- *   Splio's received response.
+ * @property mixed response
+ *   Splio's received response. May be a response or an exception.
  * @property array entityStructure
  *   Splio's sent entity structure.
  */
@@ -24,12 +23,12 @@ class SplioResponseEvent extends Event {
   /**
    * SplioResponseEvent constructor.
    *
-   * @param \Psr\Http\Message\ResponseInterface $response
-   *   Receives the response sent by Splio.
+   * @param mixed $response
+   *   Receives the response received from Splio.
    * @param array $entityStructure
    *   Receives the sent Splio entity structure.
    */
-  public function __construct(ResponseInterface $response, array $entityStructure = NULL) {
+  public function __construct($response, array $entityStructure = NULL) {
     $this->response = $response;
     $this->entityStructure = $entityStructure;
   }
