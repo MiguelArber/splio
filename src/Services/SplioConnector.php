@@ -352,6 +352,11 @@ class SplioConnector {
                 return $response;
               },
               function (RequestException $exception) use ($entityStructure) {
+
+                // Manage the event to be dispatched.
+                $responseEvent = new SplioResponseEvent($exception, $entityStructure);
+                $this->eventDispatcher
+                  ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
                 $this->logger
                   ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
                     [
@@ -464,6 +469,12 @@ class SplioConnector {
                 return $response;
               },
               function (RequestException $exception) {
+
+                // Manage the event to be dispatched.
+                $responseEvent = new SplioResponseEvent($exception);
+                $this->eventDispatcher
+                  ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
+
                 $this->logger
                   ->notice("Unable to retrieve data from Splio API. %message.",
                     [
@@ -565,11 +576,19 @@ class SplioConnector {
           $drupalKeyField = $entityFields[$keyField . '_' . $entityType]
             ->getDrupalField();
 
+//
+//          $keyFieldValue = !isset($entity->original) ?
+//            $entityStructure['keyField'][$keyField]
+//            : end($entity->original->get($drupalKeyField)->getValue()[0]);
+
           // In case an original object is contained in the received entity use
           // the original's id. In any other case, use the received's entity id.
-          $keyFieldValue = !isset($entity->original) ?
-            $entityStructure['keyField'][$keyField]
-            : end($entity->original->get($drupalKeyField)->getValue()[0]);
+          if (isset($entity->original)) {
+            $keyFieldValue = end($entity->original->get($drupalKeyField)->getValue()[0]);
+          }
+          else {
+            $keyFieldValue = $entityStructure['keyField'][$keyField];
+          }
 
           // If the entity has no keyField it cannot be synced with Splio.
           if (empty($keyFieldValue)) {
@@ -596,6 +615,12 @@ class SplioConnector {
                 return $response;
               },
               function (RequestException $exception) use ($entityStructure) {
+
+                // Manage the event to be dispatched.
+                $responseEvent = new SplioResponseEvent($exception, $entityStructure);
+                $this->eventDispatcher
+                  ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
+
                 $this->logger
                   ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
                     [
@@ -686,6 +711,12 @@ class SplioConnector {
                   return $response;
                 },
                 function (RequestException $exception) use ($entityStructure) {
+
+                  // Manage the event to be dispatched.
+                  $responseEvent = new SplioResponseEvent($exception, $entityStructure);
+                  $this->eventDispatcher
+                    ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
+
                   $this->logger
                     ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
                       [
