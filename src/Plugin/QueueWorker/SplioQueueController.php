@@ -143,7 +143,6 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
     // update the item before inserting it into the queue.
     $data = $queueEvent->getSplioQueueItem();
 
-
     // Set the CRUD action to be performed by the SplioConnector service.
     $action = $data['action'] . 'Entities';
 
@@ -164,9 +163,9 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
           throw new SuspendQueueException('Splio server is not responding. Aborting sync...');
         }
         else {
-          // Mind that the exception below will cause the queue to stop running in
-          // case it was executed via drush queue-run. The queue is meant to be
-          // handled by cron.
+          // Mind that the exception below will cause the queue to stop running
+          // in case it was executed via drush queue-run. The queue is meant to
+          // be handled by cron.
           throw new \Exception("A problem occurred, the " . $data['id'] . " item cannot not be processed at this moment.");
         }
       }

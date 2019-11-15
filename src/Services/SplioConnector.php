@@ -123,8 +123,8 @@ class SplioConnector {
    */
   protected function generateBaseUri() {
     $savedKey = ($this->config
-        ->get('splio.settings')
-        ->get('splio_config')) ?? '';
+      ->get('splio.settings')
+      ->get('splio_config')) ?? '';
     $key = empty($this->keyManager->getKey($savedKey)) ?
       ''
       : $this->keyManager
@@ -224,8 +224,8 @@ class SplioConnector {
   public function isSplioEntity(EntityInterface $entity) {
     // Load the current Splio config.
     $splioEntities = ($this->config
-        ->get('splio.entity.config')
-        ->get('splio_entities')) ?? NULL;
+      ->get('splio.entity.config')
+      ->get('splio_entities')) ?? NULL;
 
     if (!empty($splioEntities)) {
       foreach ($splioEntities as $splioEntityType => $splioEntityDef) {
