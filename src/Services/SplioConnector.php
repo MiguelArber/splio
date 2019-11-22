@@ -335,35 +335,38 @@ class SplioConnector {
           $uri = $this->baseUri . $currentEntityType;
 
           // Returns a promise once the function has finished.
-          yield function () use ($uri, $entityStructure) {
+          yield function () use ($uri, $entityStructure, $entity) {
 
             return $this->client->postAsync($uri,
               [
                 'body' => json_encode($entityStructure),
               ]
             )->then(
-              function (ResponseInterface $response) use ($entityStructure) {
+              function (ResponseInterface $response) use ($entityStructure, $entity) {
 
                 // Manage the event to be dispatched.
-                $responseEvent = new SplioResponseEvent($response, $entityStructure);
+                $responseEvent = new SplioResponseEvent($response, $entityStructure, $entity);
                 $this->eventDispatcher
                   ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
 
                 return $response;
               },
-              function (RequestException $exception) use ($entityStructure) {
+              function (RequestException $exception) use ($entityStructure, $entity) {
 
                 // Manage the event to be dispatched.
-                $responseEvent = new SplioResponseEvent($exception, $entityStructure);
+                $responseEvent = new SplioResponseEvent($exception, $entityStructure, $entity);
                 $this->eventDispatcher
                   ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
-                $this->logger
-                  ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
-                    [
-                      '%message' => $exception->getMessage(),
-                      '%entityStructure' => json_encode($entityStructure),
-                    ]);
-                throw $exception;
+
+                if (!$responseEvent->isSilentException()) {
+                  $this->logger
+                    ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
+                      [
+                        '%message' => $exception->getMessage(),
+                        '%entityStructure' => json_encode($entityStructure),
+                      ]);
+                  throw $exception;
+                }
               }
             );
           };
@@ -475,12 +478,16 @@ class SplioConnector {
                 $this->eventDispatcher
                   ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
 
-                $this->logger
-                  ->notice("Unable to retrieve data from Splio API. %message.",
-                    [
-                      '%message' => $exception->getMessage(),
-                    ]);
-                throw $exception;
+                if (!$responseEvent->isSilentException()) {
+                  if ($exception->getCode() != 404) {
+                    $this->logger
+                      ->error("Unable to retrieve data from Splio API. %message.",
+                        [
+                          '%message' => $exception->getMessage(),
+                        ]);
+                  }
+                  throw $exception;
+                }
               }
             );
           };
@@ -576,11 +583,6 @@ class SplioConnector {
           $drupalKeyField = $entityFields[$keyField . '_' . $entityType]
             ->getDrupalField();
 
-//
-//          $keyFieldValue = !isset($entity->original) ?
-//            $entityStructure['keyField'][$keyField]
-//            : end($entity->original->get($drupalKeyField)->getValue()[0]);
-
           // In case an original object is contained in the received entity use
           // the original's id. In any other case, use the received's entity id.
           if (isset($entity->original)) {
@@ -599,35 +601,37 @@ class SplioConnector {
           $uri = $this->baseUri . $currentEntity . $keyFieldValue;
 
           // Returns a promise once the function has finished.
-          yield function () use ($uri, $entityStructure) {
+          yield function () use ($uri, $entityStructure, $entity) {
             return $this->client->putAsync($uri,
               [
                 'body' => json_encode($entityStructure),
               ]
             )->then(
-              function (ResponseInterface $response) use ($entityStructure) {
+              function (ResponseInterface $response) use ($entityStructure, $entity) {
 
                 // Manage the event to be dispatched.
-                $responseEvent = new SplioResponseEvent($response, $entityStructure);
+                $responseEvent = new SplioResponseEvent($response, $entityStructure, $entity);
                 $this->eventDispatcher
                   ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
 
                 return $response;
               },
-              function (RequestException $exception) use ($entityStructure) {
+              function (RequestException $exception) use ($entityStructure, $entity) {
 
                 // Manage the event to be dispatched.
-                $responseEvent = new SplioResponseEvent($exception, $entityStructure);
+                $responseEvent = new SplioResponseEvent($exception, $entityStructure, $entity);
                 $this->eventDispatcher
                   ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
 
-                $this->logger
-                  ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
-                    [
-                      '%message' => $exception->getMessage(),
-                      '%entityStructure' => json_encode($entityStructure),
-                    ]);
-                throw $exception;
+                if (!$responseEvent->isSilentException()) {
+                  $this->logger
+                    ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
+                      [
+                        '%message' => $exception->getMessage(),
+                        '%entityStructure' => json_encode($entityStructure),
+                      ]);
+                  throw $exception;
+                }
               }
             );
           };
@@ -699,31 +703,33 @@ class SplioConnector {
             $uri = $this->baseUri . $currentEntity . $keyFieldValue;
 
             // Returns a promise once the function has finished.
-            yield function () use ($uri, $entityStructure) {
+            yield function () use ($uri, $entityStructure, $entity) {
               return $this->client->deleteAsync($uri)->then(
-                function (ResponseInterface $response) use ($entityStructure) {
+                function (ResponseInterface $response) use ($entityStructure, $entity) {
 
                   // Manage the event to be dispatched.
-                  $responseEvent = new SplioResponseEvent($response, $entityStructure);
+                  $responseEvent = new SplioResponseEvent($response, $entityStructure, $entity);
                   $this->eventDispatcher
                     ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
 
                   return $response;
                 },
-                function (RequestException $exception) use ($entityStructure) {
+                function (RequestException $exception) use ($entityStructure, $entity) {
 
                   // Manage the event to be dispatched.
-                  $responseEvent = new SplioResponseEvent($exception, $entityStructure);
+                  $responseEvent = new SplioResponseEvent($exception, $entityStructure, $entity);
                   $this->eventDispatcher
                     ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
 
-                  $this->logger
-                    ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
-                      [
-                        '%message' => $exception->getMessage(),
-                        '%entityStructure' => json_encode($entityStructure),
-                      ]);
-                  throw $exception;
+                  if (!$responseEvent->isSilentException()) {
+                    $this->logger
+                      ->error("Unable to fetch/send data from Splio API. %message. JSON body: %entityStructure",
+                        [
+                          '%message' => $exception->getMessage(),
+                          '%entityStructure' => json_encode($entityStructure),
+                        ]);
+                    throw $exception;
+                  }
                 }
               );
             };
@@ -1380,13 +1386,13 @@ class SplioConnector {
 
     $drupalFieldEntityReference = explode(".", $drupalField);
 
-    $entityRefId = $entity
+    $entityRefId = end($entity
       ->get($drupalFieldEntityReference[0])
-      ->getValue();
+      ->getValue())[0];
 
     $entityRef = $this->entityTypeManager
       ->getStorage($drupalFieldEntityReference[1])
-      ->load(end($entityRefId[0]));
+      ->load($entityRefId);
 
     if (!empty($entityRef)) {
       try {
