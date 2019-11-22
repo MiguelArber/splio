@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @QueueWorker(
  *   id = "cron_splio_sync",
  *   title = @Translation("Cron Splio sync process"),
- *   cron = {"time" = 60}
+ *   cron = {"time" = 40}
  * )
  */
 class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPluginInterface {
