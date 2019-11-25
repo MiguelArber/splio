@@ -843,28 +843,12 @@ class SplioConnector {
         $item += ['originalSplioEntityType' => 'order_lines'];
       }
 
-      // Load the key field for the received entity.
-      $entitySplioKeyField = $this->config->get('splio.entity.config')
-        ->get('splio_entities')[$splioEntityType]['splio_entity_key_field'];
-
-      // Load the splio entity fields the received entity.
-      $entityFields = $this->entityTypeManager
-        ->getStorage('splio_field')
-        ->loadByProperties([
-          'splio_entity' => $splioEntityType,
-        ]);
-
-      // Load the drupal field defined as the splio key field.
-      $entityKeyField = $entityFields[$entitySplioKeyField]
-        ->getDrupalField();
-
       $queue = $this->queueFactory->get('cron_splio_sync');
 
-      // Create an item.
+      // In case there is an original entity (update) add it to the queue item.
+      // In case there is a delete action, add the deleted item as original.
       $item += [
-        'id' => end($entity
-          ->get($entityKeyField)
-          ->getValue()[0]),
+        'id' => $entity->id(),
         'original' => $entity->original ?? ($action == 'delete' ? $entity : NULL),
         'splioEntityType' => $splioEntityType,
         'action' => $action,
@@ -1386,13 +1370,13 @@ class SplioConnector {
 
     $drupalFieldEntityReference = explode(".", $drupalField);
 
-    $entityRefId = end($entity
+    $entityRefId = $entity
       ->get($drupalFieldEntityReference[0])
-      ->getValue())[0];
+      ->getValue();
 
     $entityRef = $this->entityTypeManager
       ->getStorage($drupalFieldEntityReference[1])
-      ->load($entityRefId);
+      ->load(end($entityRefId[0]));
 
     if (!empty($entityRef)) {
       try {
