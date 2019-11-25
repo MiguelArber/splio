@@ -97,24 +97,14 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
     $entityDrupalType = $this->config->get('splio.entity.config')
       ->get('splio_entities')[$data['splioEntityType']]['local_entity'];
 
-    // Load the configured key field for the Splio entity.
-    $entitySplioKeyField = $this->config->get('splio.entity.config')
-      ->get('splio_entities')[$data['splioEntityType']]['splio_entity_key_field'];
-
     try {
-      // Load the drupal field mapped to the previously loaded key field.
-      $entityDrupalField = $this->entityManager
-        ->getStorage('splio_field')
-        ->loadByProperties([
-          'splio_entity' => $data['splioEntityType'],
-        ])[$entitySplioKeyField]->getDrupalField();
 
-      // Load the entity based on the obtained key field.
-      $entity = $this->entityManager
-        ->getStorage($entityDrupalType)
-        ->loadByProperties([
-          $entityDrupalField => $data['id'],
-        ]);
+      // Load the entity based on its Drupal id.
+      $entity = [
+        $this->entityManager
+          ->getStorage($entityDrupalType)
+          ->load($data['id']),
+      ];
 
       // In delete actions, the $entity might not exist, in these cases the
       // provided data['original'] entity will be used as the current entity.
@@ -166,7 +156,7 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
           // Mind that the exception below will cause the queue to stop running
           // in case it was executed via drush queue-run. The queue is meant to
           // be handled by cron.
-          throw new \Exception("A problem occurred, the " . $data['id'] . " item cannot not be processed at this moment.");
+          throw new \Exception("A problem occurred, the " . $data['splioEntityType'] . " " . $data['id'] . " could not be processed.");
         }
       }
     }
