@@ -100,16 +100,14 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
     try {
 
       // Load the entity based on its Drupal id.
-      $entity = [
-        $this->entityManager
-          ->getStorage($entityDrupalType)
-          ->load($data['id']),
-      ];
+      $entity = $this->entityManager
+        ->getStorage($entityDrupalType)
+        ->load($data['id']);
 
       // In delete actions, the $entity might not exist, in these cases the
       // provided data['original'] entity will be used as the current entity.
       if (empty($entity) && !(empty($data['original']))) {
-        $entity = [$data['original']];
+        $entity = $data['original'];
       }
     }
     catch (\Exception $exception) {
@@ -131,7 +129,7 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
     $data = $queueEvent->getSplioQueueItem();
 
     // If there is any, add the original entity to the current entity.
-    empty($data['original']) ?: end($entity)->original = $data['original'];
+    empty($data['original']) ?: $entity->original = $data['original'];
 
     // Set the CRUD action to be performed by the SplioConnector service.
     $action = $data['action'] . 'Entities';
@@ -139,7 +137,7 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
     if (method_exists($this->splioConnector, $action)) {
 
       // If the received action is valid, execute it.
-      $result = $this->splioConnector->$action($entity);
+      $result = $this->splioConnector->$action([$entity]);
 
       // In case there the element in the result array turns to be an exception
       // object, throw it!
