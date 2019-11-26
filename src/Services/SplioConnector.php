@@ -456,11 +456,6 @@ class SplioConnector {
               function (ResponseInterface $response) use ($keyField) {
                 try {
 
-                  // Manage the event to be dispatched.
-                  $responseEvent = new SplioResponseEvent($response);
-                  $this->eventDispatcher
-                    ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
-
                   // Decode the received response and add the proper keyField.
                   $response = json_decode($response->getBody(), TRUE);
                   $response['keyField'] = $keyField;
@@ -472,22 +467,14 @@ class SplioConnector {
                 return $response;
               },
               function (RequestException $exception) {
-
-                // Manage the event to be dispatched.
-                $responseEvent = new SplioResponseEvent($exception);
-                $this->eventDispatcher
-                  ->dispatch(SplioResponseEvent::SPLIO_EVENT, $responseEvent);
-
-                if (!$responseEvent->isSilentException()) {
-                  if ($exception->getCode() != 404) {
-                    $this->logger
-                      ->error("Unable to retrieve data from Splio API. %message.",
-                        [
-                          '%message' => $exception->getMessage(),
-                        ]);
-                  }
-                  throw $exception;
+                if ($exception->getCode() != 404) {
+                  $this->logger
+                    ->error("Unable to retrieve data from Splio API. %message.",
+                      [
+                        '%message' => $exception->getMessage(),
+                      ]);
                 }
+                throw $exception;
               }
             );
           };
