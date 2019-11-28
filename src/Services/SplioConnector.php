@@ -837,6 +837,7 @@ class SplioConnector {
       $item += [
         'id' => $entity->id(),
         'original' => $entity->original ?? ($action == 'delete' ? $entity : NULL),
+        'lang' => $entity->language()->getId(),
         'splioEntityType' => $splioEntityType,
         'action' => $action,
       ];

@@ -104,6 +104,11 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
         ->getStorage($entityDrupalType)
         ->load($data['id']);
 
+      // Maintain the language context that was queued.
+      if ($entity->hasTranslation($data['lang'])) {
+        $entity = $entity->getTranslation($data['lang']);
+      }
+
       // In delete actions, the $entity might not exist, in these cases the
       // provided data['original'] entity will be used as the current entity.
       if (empty($entity) && !(empty($data['original']))) {
