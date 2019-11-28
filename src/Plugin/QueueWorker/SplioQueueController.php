@@ -105,7 +105,7 @@ class SplioQueueController extends QueueWorkerBase implements ContainerFactoryPl
         ->load($data['id']);
 
       // Maintain the language context that was queued.
-      if ($entity->hasTranslation($data['lang'])) {
+      if (isset($data['lang']) && $entity->hasTranslation($data['lang'])) {
         $entity = $entity->getTranslation($data['lang']);
       }
 
