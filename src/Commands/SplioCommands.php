@@ -155,13 +155,13 @@ class SplioCommands extends DrushCommands {
   private function validateOptionAction($action) {
 
     // Define the valid actions that can be performed in the Splio queue.
-    define('VALID_ACTIONS', [
+    $validActions = [
       'create' => 'create',
       'update' => 'update',
       'delete' => 'delete',
-    ]);
+    ];
 
-    return in_array($action, VALID_ACTIONS);
+    return in_array($action, $validActions);
   }
 
 }

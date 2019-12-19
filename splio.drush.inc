@@ -123,11 +123,11 @@ function splio_drush_validate_option_entity_type($entity_type) {
 function splio_drush_validate_option_action($action) {
 
   // Define the valid actions that can be performed in the Splio queue.
-  define('VALID_ACTIONS', [
+  $validActions = [
     'create' => 'create',
     'update' => 'update',
     'delete' => 'delete',
-  ]);
+  ];
 
-  return in_array($action, VALID_ACTIONS);
+  return in_array($action, $validActions);
 }

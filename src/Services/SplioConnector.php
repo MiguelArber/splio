@@ -51,6 +51,13 @@ class SplioConnector {
     'stores' => 'store/',
   ];
 
+  const VALID_ACTIONS = [
+    'create' => 'create',
+    'update' => 'update',
+    'delete' => 'delete',
+    'dequeue' => 'dequeue',
+  ];
+
   protected $client;
 
   protected const DATE_FORMAT = 'Y-m-d H:i:s';
@@ -799,14 +806,6 @@ class SplioConnector {
     // Check if the received entity is configured as a Splio entity.
     $splioEntityType = $this->isSplioEntity($entity);
 
-    // Defines the valid actions that this method may receive.
-    define('VALID_ACTIONS', [
-      'create' => 'create',
-      'update' => 'update',
-      'delete' => 'delete',
-      'dequeue' => 'dequeue',
-    ]);
-
     if ($splioEntityType) {
 
       // The item that will later be queued.
@@ -853,7 +852,7 @@ class SplioConnector {
 
       // Finally, perform a last check to ensure the set action is valid.
       if ($item['action'] != 'dequeue') {
-        if (!in_array($item['action'], VALID_ACTIONS)) {
+        if (!in_array($item['action'], static::VALID_ACTIONS)) {
           $this->logger->error("The %type[%id] entity will not be queued. Action type received: %action. Only 'create', 'update' and 'delete' actions are queued.",
             [
               '%action' => $item['action'],
