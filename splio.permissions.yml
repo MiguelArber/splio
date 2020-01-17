@@ -1,0 +1,3 @@
+administer splio:
+  title: 'Administer splio'
+  restrict access: false

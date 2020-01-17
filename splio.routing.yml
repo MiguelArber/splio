@@ -4,7 +4,7 @@ system.config.splio.api_key_config:
     _title: 'Splio connection settings'
     _form: '\Drupal\splio\Form\ApiKeyConfigForm'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer splio'
 
 system.config.splio.entity_config:
   path: '/admin/config/splio/entity'
@@ -12,7 +12,7 @@ system.config.splio.entity_config:
     _title: 'Splio entity configuration'
     _form: '\Drupal\splio\Form\EntitiesConfigForm'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer splio'
 
 entity.splio.contacts:
   path: '/admin/config/splio/entity/contacts'
@@ -20,7 +20,7 @@ entity.splio.contacts:
     _title: 'Splio contacts configuration'
     _entity_form: 'splio_field.edit'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer splio'
 
 entity.splio.products:
   path: '/admin/config/splio/entity/products'
@@ -28,7 +28,7 @@ entity.splio.products:
     _title: 'Splio products configuration'
     _entity_form: 'splio_field.edit'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer splio'
 
 entity.splio.receipts:
   path: '/admin/config/splio/entity/receipts'
@@ -36,7 +36,7 @@ entity.splio.receipts:
     _title: 'Splio orders configuration'
     _entity_form: 'splio_field.edit'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer splio'
 
 entity.splio.order_lines:
   path: '/admin/config/splio/entity/order_lines'
@@ -44,7 +44,7 @@ entity.splio.order_lines:
     _title: 'Splio order lines configuration'
     _entity_form: 'splio_field.edit'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer splio'
 
 entity.splio.stores:
   path: '/admin/config/splio/entity/stores'
@@ -52,4 +52,4 @@ entity.splio.stores:
     _title: 'Splio stores lines configuration'
     _entity_form: 'splio_field.edit'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'administer splio'
